@@ -5,8 +5,8 @@ namespace Sample.Identity.App.Contracts
 {
     public interface IIdentityService
     {
-        public Task<UserIdentity?> SignIn(IdentitySignInTransfer model);
+        public UserIdentity SignIn(IdentitySignInTransfer model);
 
-        public Task<UserIdentity?> Refresh(IdentityRefreshTransfer model);
+        public UserIdentity Refresh(IdentityRefreshTransfer model);
     }
 }

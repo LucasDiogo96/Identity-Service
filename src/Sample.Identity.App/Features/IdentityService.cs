@@ -43,7 +43,7 @@ namespace Sample.Identity.App.Features
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<UserIdentity?> SignIn(IdentitySignInTransfer model)
+        public UserIdentity? SignIn(IdentitySignInTransfer model)
         {
             // Find user
             User? user = unitOfWork.UserRepository.Get(e =>
@@ -62,7 +62,7 @@ namespace Sample.Identity.App.Features
 
             OnSignInSucceed(user, identity);
 
-            await cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
+            cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
 
             return identity;
         }
@@ -72,10 +72,10 @@ namespace Sample.Identity.App.Features
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<UserIdentity?> Refresh(IdentityRefreshTransfer model)
+        public UserIdentity? Refresh(IdentityRefreshTransfer model)
         {
             // Get identity stored on cache
-            UserIdentity identity = await cacheManager.Get<UserIdentity>(model.RefreshToken);
+            UserIdentity identity = cacheManager.Get<UserIdentity>(model.RefreshToken);
 
             // Check that the token has not expired in the cache
             if (identity is null ||
@@ -86,7 +86,7 @@ namespace Sample.Identity.App.Features
                 return default;
             }
 
-            await OnRefreshSucceed(model, identity);
+            OnRefreshSucceed(model, identity);
 
             // Handle Authethentication
             return identity;
@@ -136,10 +136,10 @@ namespace Sample.Identity.App.Features
         /// <param name="model"></param>
         /// <param name="identity"></param>
         /// <returns>Task</returns>
-        private async Task OnRefreshSucceed(IdentityRefreshTransfer model, UserIdentity identity)
+        private void OnRefreshSucceed(IdentityRefreshTransfer model, UserIdentity identity)
         {
             // Delete the previous authentication.
-            await cacheManager.Remove(model.RefreshToken);
+            cacheManager.Remove(model.RefreshToken);
 
             User user = unitOfWork.UserRepository.GetById(model.UserId);
 
@@ -147,7 +147,7 @@ namespace Sample.Identity.App.Features
             identity = provider.SignIn(user);
 
             // Store refresh token in redis
-            await cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
+            cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
 
             logger.LogInformation($"The user {identity.Username} has been authenticated..");
         }

@@ -19,9 +19,9 @@ namespace Sample.Identity.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(UserIdentity), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Post([FromBody] IdentitySignInTransfer model)
+        public IActionResult Post([FromBody] IdentitySignInTransfer model)
         {
-            UserIdentity? response = await service.SignIn(model);
+            UserIdentity? response = service.SignIn(model);
 
             return Ok(response);
         }
@@ -29,9 +29,9 @@ namespace Sample.Identity.API.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(UserIdentity), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Put([FromBody] IdentityRefreshTransfer model)
+        public IActionResult Put([FromBody] IdentityRefreshTransfer model)
         {
-            UserIdentity? response = await service.Refresh(model);
+            UserIdentity? response = service.Refresh(model);
 
             return Ok(response);
         }

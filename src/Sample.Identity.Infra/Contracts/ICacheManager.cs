@@ -2,10 +2,12 @@
 {
     public interface ICacheManager
     {
-        public Task<T> Get<T>(string key);
+        public bool Exists(string key);
 
-        public Task Add<T>(string key, T data, TimeSpan expiration = default);
+        public T Get<T>(string key);
 
-        public Task Remove(string key);
+        public void Add<T>(string key, T data, TimeSpan expiration = default);
+
+        public void Remove(string key);
     }
 }

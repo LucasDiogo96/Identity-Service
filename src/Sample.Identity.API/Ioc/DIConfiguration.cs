@@ -10,6 +10,7 @@ using Sample.Identity.Infra.Models;
 using Sample.Identity.Infra.Persistence;
 using Sample.Identity.Infra.Providers;
 using Sample.Identity.Infra.Services.Zenvia;
+using StackExchange.Redis;
 
 namespace Sample.Identity.API.Ioc
 {
@@ -30,11 +31,8 @@ namespace Sample.Identity.API.Ioc
 
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = configuration.GetConnectionString("RedisCacheDB");
-                options.InstanceName = "sample:identity";
-            });
+            IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisCacheDB"));
+            services.AddScoped(s => redis.GetDatabase());
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICacheManager, RedisDBContext>();

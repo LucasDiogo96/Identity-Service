@@ -1,54 +1,49 @@
-﻿using System.Text;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Sample.Identity.Infra.Contracts;
+using StackExchange.Redis;
 
 namespace Sample.Identity.Infra.Contexts
 {
     public class RedisDBContext : ICacheManager
     {
-        private readonly IDistributedCache cache;
-        private readonly DistributedCacheEntryOptions options;
+        private readonly IDatabase context;
 
-        public RedisDBContext(IDistributedCache cache)
+        public RedisDBContext(IDatabase context)
         {
-            this.cache = cache;
-            options = new DistributedCacheEntryOptions();
+            this.context = context;
         }
 
-        public async Task<T> Get<T>(string key)
+        public bool Exists(string key)
         {
-            byte[] data = await cache.GetAsync(key);
+            return context.KeyExists(key);
+        }
+
+        public void Add<T>(string key, T data, TimeSpan expiration = default)
+        {
+            string json = JsonConvert.SerializeObject(data);
+
+            if (expiration == default)
+                expiration = TimeSpan.FromMinutes(15);
+
+            context.StringSetAsync(key, json, expiration);
+        }
+
+        public T Get<T>(string key)
+        {
+            string data = context.StringGet(key);
 
             if (data is not null)
             {
-                string json = Encoding.UTF8.GetString(data);
-
-                return JsonConvert.DeserializeObject<T>(json);
+                return JsonConvert.DeserializeObject<T>(data);
             }
 
             return default;
         }
 
-        public async Task Add<T>(string key, T data, TimeSpan expiration = default)
+        public void Remove(string key)
         {
-            // Serialize it
-            string json = JsonConvert.SerializeObject(data);
-
-            // Get bytes
-            byte[] bytes = Encoding.UTF8.GetBytes(json);
-
-            // Add a custom expiration time
-            if (expiration == default)
-                options.SlidingExpiration = expiration;
-
-            // Persist in cache
-            await cache.SetAsync(key, bytes, options).ConfigureAwait(false);
-        }
-
-        public async Task Remove(string key)
-        {
-            await cache.RemoveAsync(key).ConfigureAwait(false);
+            context.KeyDelete(key);
         }
     }
 }
