@@ -1,6 +1,6 @@
 ﻿namespace Sample.Identity.Infra.Contracts
 {
-    public interface ICacheContext
+    public interface ICacheManager
     {
         public Task<T> Get<T>(string key);
 

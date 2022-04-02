@@ -1,4 +1,5 @@
 ﻿using Sample.Identity.Domain.Common;
+using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.Domain.Entities
 {
@@ -6,7 +7,6 @@ namespace Sample.Identity.Domain.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string NickName { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
@@ -16,6 +16,7 @@ namespace Sample.Identity.Domain.Entities
         public bool Active { get; set; }
         public string Tenant { get; set; }
         public int AccessFailedCount { get; set; }
+        public Password Password { get; set; }
         public DateTime? LockoutEndDateUtc { get; set; }
 
         public void Block()
@@ -33,10 +34,15 @@ namespace Sample.Identity.Domain.Entities
             Active = false;
         }
 
-        public void ResetAttempts()
+        public void ResetSignInAttempts()
         {
             AccessFailedCount = 0;
             LockoutEndDateUtc = null;
+        }
+
+        public void OnFailedSignInAttempt()
+        {
+            AccessFailedCount++;
         }
     }
 }

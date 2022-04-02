@@ -7,7 +7,7 @@
         public int TokenExpirationTime { get; set; }
         public int RefreshExpirationTime { get; set; }
         public bool UserLockoutEnabledByDefault { get; set; }
-        public int DefaultAccountLockoutTimeSpan { get; set; }
-        public int MaxFailedAccessAttemptsBeforeLockout { get; set; }
+        public int AccountLockoutTimeSpan { get; set; }
+        public int MaxFailedAttempts { get; set; }
     }
 }

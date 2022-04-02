@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Templates\" />
+    <ProjectReference Include="..\Sample.Identity.Infra\Sample.Identity.Infra.csproj" />
   </ItemGroup>
 
 </Project>

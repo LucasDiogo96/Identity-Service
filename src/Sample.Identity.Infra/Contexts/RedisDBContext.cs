@@ -5,7 +5,7 @@ using Sample.Identity.Infra.Contracts;
 
 namespace Sample.Identity.Infra.Contexts
 {
-    public class RedisDBContext : ICacheContext
+    public class RedisDBContext : ICacheManager
     {
         private readonly IDistributedCache cache;
         private readonly DistributedCacheEntryOptions options;
