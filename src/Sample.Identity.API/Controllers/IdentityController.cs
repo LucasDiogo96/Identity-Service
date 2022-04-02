@@ -1,34 +1,39 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sample.Identity.App.Contracts;
+using Sample.Identity.App.Transfers;
+using Sample.Identity.Infra.Models;
 
 namespace Sample.Identity.API.Controllers
 {
     [AllowAnonymous]
     public class IdentityController : MainController
     {
-        private readonly ILogger<IdentityController> logger;
+        private readonly IIdentityService service;
 
-        public IdentityController(ILogger<IdentityController> logger)
+        public IdentityController(IIdentityService service)
         {
-            this.logger = logger;
+            this.service = service;
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Post([FromBody] object model)
+        [ProducesResponseType(typeof(UserIdentity), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Post([FromBody] IdentitySignInTransfer model)
         {
-            return Ok();
+            UserIdentity? response = await service.SignIn(model);
+
+            return Ok(response);
         }
 
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Put([FromBody] object model)
+        [ProducesResponseType(typeof(UserIdentity), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Put([FromBody] IdentityRefreshTransfer model)
         {
-            return Ok();
+            UserIdentity? response = await service.Refresh(model);
+
+            return Ok(response);
         }
     }
 }

@@ -19,6 +19,14 @@ namespace Sample.Identity.Domain.Entities
         public Password Password { get; set; }
         public DateTime? LockoutEndDateUtc { get; set; }
 
+        public void Update(string firstname, string lastname, string phoneNumber, string culture)
+        {
+            FirstName = firstname;
+            LastName = lastname;
+            PhoneNumber = phoneNumber;
+            CultureCode = culture;
+        }
+
         public void Block()
         {
             Blocked = true;

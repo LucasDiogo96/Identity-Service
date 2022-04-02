@@ -20,7 +20,14 @@ namespace Sample.Identity.App.Features
         private readonly IUserDomainService userDomainService;
         private readonly ICacheManager cacheManager;
 
-        public IdentityService(IOptions<AppSettings> settings, IIdentityProvider provider, IUnitOfWork unitOfWork, ILogger<IdentityService> logger, INotification notification, IUserDomainService userDomainService, ICacheManager cacheManager)
+        public IdentityService(
+            IOptions<AppSettings> settings,
+            IIdentityProvider provider,
+            IUnitOfWork unitOfWork,
+            ILogger<IdentityService> logger,
+            INotification notification,
+            IUserDomainService userDomainService,
+            ICacheManager cacheManager)
         {
             this.logger = logger;
             this.cacheManager = cacheManager;
@@ -72,7 +79,7 @@ namespace Sample.Identity.App.Features
 
             // Check that the token has not expired in the cache
             if (identity is null ||
-                !identity.ValidateRefreshToken(model.AccessToken, model.RefreshToken, model.UserId))
+               !identity.ValidateRefreshToken(model.AccessToken, model.RefreshToken, model.UserId))
             {
                 notification.AddNotification(MappedErrorsEnum.RefreshTokenExpired);
 

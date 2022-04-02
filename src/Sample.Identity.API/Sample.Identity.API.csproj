@@ -15,12 +15,14 @@
     <PackageReference Include="MassTransit" Version="8.0.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sample.Identity.App\Sample.Identity.App.csproj" />
     <ProjectReference Include="..\Sample.Identity.Infra\Sample.Identity.Infra.csproj" />
   </ItemGroup>
 

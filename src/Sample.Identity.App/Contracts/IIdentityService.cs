@@ -1,6 +1,12 @@
-﻿namespace Sample.Identity.App.Contracts
+﻿using Sample.Identity.App.Transfers;
+using Sample.Identity.Infra.Models;
+
+namespace Sample.Identity.App.Contracts
 {
-    internal interface IIdentityService
+    public interface IIdentityService
     {
+        public Task<UserIdentity?> SignIn(IdentitySignInTransfer model);
+
+        public Task<UserIdentity?> Refresh(IdentityRefreshTransfer model);
     }
 }

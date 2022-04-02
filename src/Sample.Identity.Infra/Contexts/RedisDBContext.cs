@@ -10,10 +10,10 @@ namespace Sample.Identity.Infra.Contexts
         private readonly IDistributedCache cache;
         private readonly DistributedCacheEntryOptions options;
 
-        public RedisDBContext(IDistributedCache cache, DistributedCacheEntryOptions options)
+        public RedisDBContext(IDistributedCache cache)
         {
             this.cache = cache;
-            this.options = options;
+            options = new DistributedCacheEntryOptions();
         }
 
         public async Task<T> Get<T>(string key)
