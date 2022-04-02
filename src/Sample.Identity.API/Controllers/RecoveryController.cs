@@ -3,28 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Sample.Identity.API.Controllers
 {
-    [Authorize]
-    public class UserController : MainController
+    [AllowAnonymous]
+    public class RecoveryController : MainController
     {
-        private readonly ILogger<UserController> logger;
+        private readonly ILogger<RecoveryController> logger;
 
-        public UserController(ILogger<UserController> logger)
+        public RecoveryController(ILogger<RecoveryController> logger)
         {
             this.logger = logger;
-        }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(string id)
-        {
-            return Ok();
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] string login)
         {
             return Ok();
         }

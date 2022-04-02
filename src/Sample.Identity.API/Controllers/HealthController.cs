@@ -1,10 +1,12 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Sample.Identity.API.Controllers
 {
+    [AllowAnonymous]
     [Route("api/Health")]
     public class HealthController : Controller
     {
