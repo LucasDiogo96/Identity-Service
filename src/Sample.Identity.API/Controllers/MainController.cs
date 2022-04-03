@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Sample.Identity.API.Filters;
 
 namespace Sample.Identity.API.Controllers
@@ -9,5 +10,14 @@ namespace Sample.Identity.API.Controllers
     [Produces("application/json")]
     public class MainController : ControllerBase
     {
+        protected string GetAuthenticatedUserId()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return User.FindFirst(e => e.Type == ClaimTypes.NameIdentifier).Value;
+            }
+
+            throw new System.UnauthorizedAccessException();
+        }
     }
 }

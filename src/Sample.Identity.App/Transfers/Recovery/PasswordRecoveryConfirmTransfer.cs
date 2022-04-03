@@ -1,6 +1,4 @@
-﻿using Sample.Identity.Domain.Enumerators;
-
-namespace Sample.Identity.App.Transfers.Recovery
+﻿namespace Sample.Identity.App.Transfers.Recovery
 {
     public class PasswordRecoveryConfirmTransfer
     {

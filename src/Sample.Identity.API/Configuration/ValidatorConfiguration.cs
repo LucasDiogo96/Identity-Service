@@ -1,4 +1,9 @@
-﻿using FluentValidation.AspNetCore;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Sample.Identity.App.Transfers;
+using Sample.Identity.App.Transfers.Recovery;
+using Sample.Identity.App.Validators;
+using Sample.Identity.Domain.Commands;
 
 namespace Sample.Identity.API.Configuration
 {
@@ -8,6 +13,14 @@ namespace Sample.Identity.API.Configuration
         {
             // Fluent validator
             services.AddMvc().AddFluentValidation();
+
+            services.AddTransient<IValidator<PasswordRecoveryTransfer>, PasswordRecoveryValidator>();
+            services.AddTransient<IValidator<PasswordRecoveryRequestTransfer>, PasswordRecoveryRequestValidator>();
+            services.AddTransient<IValidator<PasswordRecoveryConfirmTransfer>, PasswordRecoveryConfirmValidator>();
+            services.AddTransient<IValidator<IdentitySignInTransfer>, IdentitySignInValidator>();
+            services.AddTransient<IValidator<IdentityRefreshTransfer>, IdentityRefreshValidator>();
+            services.AddTransient<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
+            services.AddTransient<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
         }
 
         public static void ConfigureValidatorLocation(this IApplicationBuilder app, IConfiguration configuration)

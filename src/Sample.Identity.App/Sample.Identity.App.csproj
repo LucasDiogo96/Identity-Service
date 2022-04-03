@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Sample.Identity.Infra\Sample.Identity.Infra.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Sample.Identity.Infra.Contracts;
 using StackExchange.Redis;
 

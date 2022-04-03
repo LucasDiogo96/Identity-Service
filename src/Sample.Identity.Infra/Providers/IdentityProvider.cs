@@ -36,6 +36,7 @@ namespace Sample.Identity.Infra.Providers
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
+                    new Claim(ClaimTypes.NameIdentifier, identity.UserId),
                     new Claim(ClaimTypes.Name, identity.Username),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                     new Claim(JwtRegisteredClaimNames.Nbf, identity.CreateDate.ToString()),

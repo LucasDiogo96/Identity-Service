@@ -29,6 +29,18 @@ namespace Sample.Identity.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get()
+        {
+            string userId = GetAuthenticatedUserId();
+
+            User? response = await service.Get(userId);
+
+            return Ok(response);
+        }
+
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

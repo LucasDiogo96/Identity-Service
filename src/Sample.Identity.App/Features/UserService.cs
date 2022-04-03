@@ -1,5 +1,4 @@
-﻿using Mapster;
-using Sample.Identity.App.Contracts;
+﻿using Sample.Identity.App.Contracts;
 using Sample.Identity.Domain.Commands;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Infra.Contracts;
