@@ -10,7 +10,9 @@ using Sample.Identity.Infra.Contracts;
 using Sample.Identity.Infra.Models;
 using Sample.Identity.Infra.Persistence;
 using Sample.Identity.Infra.Providers;
+using Sample.Identity.Infra.Services.Sendgrid;
 using Sample.Identity.Infra.Services.Zenvia;
+using SendGrid.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
 namespace Sample.Identity.API.Ioc
@@ -19,31 +21,40 @@ namespace Sample.Identity.API.Ioc
     {
         public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            //// Add db context
+            // Add generic app dependencies
             services.AddMvc(options => options.Filters.Add<NotificationFilter>());
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
+            // Add notifications dependencies
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = configuration.GetSection("SendGridKey").Value;
+            });
+            services.AddScoped<ISmsService, ZenviaService>();
+            services.AddScoped<IEmailService, SendGridService>();
+            services.AddScoped<INotification, NotificationContext>();
+
+            // Add services dependencies
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddScoped<IUserDomainService, UserDomainService>();
+
+            // Add data access dependencies
+            services.AddScoped<IMongoContext, MongoContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisCacheDB"));
             services.AddScoped(s => redis.GetDatabase());
 
-            services.AddScoped<IMongoContext, MongoContext>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Configure context automatically
             MongoContext context = new MongoContext(configuration);
             context.Configure();
 
             services.AddScoped<ICacheManager, RedisDBContext>();
-            services.AddScoped<ISmsService, ZenviaService>();
+
+            // Add providers
             services.AddTransient<IIdentityProvider, IdentityProvider>();
-
-            services.AddScoped<INotification, NotificationContext>();
-            services.AddScoped<IUserDomainService, UserDomainService>();
-
-            services.AddTransient<IIdentityService, IdentityService>();
-            services.AddTransient<IUserService, UserService>();
         }
     }
 }

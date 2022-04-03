@@ -2,7 +2,6 @@
 using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.Enumerators;
-using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.Domain.Services
 {
@@ -41,7 +40,6 @@ namespace Sample.Identity.Domain.Services
                 return false;
             }
 
-            // User blocked
             if (user.Blocked)
                 notification.AddNotification(MappedErrorsEnum.UserBlocked);
 
