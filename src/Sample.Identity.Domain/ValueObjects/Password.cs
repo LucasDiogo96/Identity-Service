@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Text.RegularExpressions;
 using Sample.Identity.Domain.Common;
 
 namespace Sample.Identity.Domain.ValueObjects
@@ -32,7 +29,7 @@ namespace Sample.Identity.Domain.ValueObjects
 
         private void GeneratePassword(string password)
         {
-            if (ValidatePasswordPattern(password))
+            if (!ValidatePasswordPattern(password))
                 throw new InvalidDataException("Password requirements do not match the security patterns.");
 
             Salt = BCrypt.Net.BCrypt.GenerateSalt();

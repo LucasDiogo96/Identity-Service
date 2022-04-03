@@ -31,6 +31,9 @@ services:
     build:
       context: .
       dockerfile: Sample.Identity.API/Dockerfile
+    links:
+      - mongo
+      - redis
     depends_on:
       - mongo
       - redis
