@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Identity;
 using Sample.Identity.Domain.Common;
 
 namespace Sample.Identity.Domain.ValueObjects
@@ -22,24 +25,19 @@ namespace Sample.Identity.Domain.ValueObjects
             yield return Hash;
         }
 
-        public bool ValidatePassword(string password)
+        public bool Verify(string password)
         {
-            if (!ValidatePasswordPattern(password))
-                return false;
-
-            return true;
-        }
-
-        public static bool Verify(string password, string hash)
-        {
-            return true;
+            return BCrypt.Net.BCrypt.Verify(password, this.Hash);
         }
 
         private void GeneratePassword(string password)
         {
-            Salt = "";
+            if (ValidatePasswordPattern(password))
+                throw new InvalidDataException("Password requirements do not match the security patterns.");
 
-            Hash = "";
+            Salt = BCrypt.Net.BCrypt.GenerateSalt();
+
+            Hash = BCrypt.Net.BCrypt.HashPassword(password, Salt);
         }
 
         /// <summary>

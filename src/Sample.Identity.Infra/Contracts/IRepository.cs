@@ -2,21 +2,21 @@
 
 namespace Sample.Identity.Infra.Contracts
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<TEntity> : IDisposable where TEntity : class
     {
         public IEnumerable<TEntity> Get(
            Expression<Func<TEntity, bool>> filter = null,
            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
            string includeProperties = "");
 
-        public TEntity GetById(object id);
+        public Task<TEntity> GetById(object id);
 
-        public void Insert(TEntity entity);
+        public Task<IEnumerable<TEntity>> GetAll();
 
-        public void Delete(object id);
+        public void Insert(TEntity obj);
 
-        public void Delete(TEntity entity);
+        public void Update(TEntity obj);
 
-        public void Update(TEntity entity);
+        public void Delete(string id);
     }
 }

@@ -15,23 +15,30 @@ namespace Sample.Identity.App.Features
             this.unitOfWork = unitOfWork;
         }
 
-        public User Get(string id)
+        public async Task<User> Get(string id)
         {
-            return unitOfWork.UserRepository.GetById(id);
+            return await unitOfWork.UserRepository.GetById(id);
         }
 
         public void Add(CreateUserCommand model)
         {
-            User user = model.Adapt<User>();
+            User user = new User(
+                model.FirstName,
+                model.LastName,
+                model.Username,
+                model.Email,
+                model.PhoneNumber,
+                model.CultureCode,
+                model.Password);
 
             unitOfWork.UserRepository.Insert(user);
 
             unitOfWork.Save();
         }
 
-        public void Update(UpdateUserCommand model)
+        public async Task Update(UpdateUserCommand model)
         {
-            User user = unitOfWork.UserRepository.GetById(model.Id);
+            User user = await unitOfWork.UserRepository.GetById(model.Id);
 
             user.Update(model.FirstName, model.LastName, model.PhoneNumber, model.CultureCode);
 

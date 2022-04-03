@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Identity.API.Filters;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Features;
@@ -19,13 +20,6 @@ namespace Sample.Identity.API.Ioc
         public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             //// Add db context
-            //services.AddDbContext<PersistenceContext>(
-            //options => options.UseMongo(configuration["Tradeforce:ConnectionStrings:CosmosDB"], configuration["DatabaseName"],
-            //options =>
-            //{
-            //    options.RequestTimeout(TimeSpan.FromSeconds(30));
-            //}));
-
             services.AddMvc(options => options.Filters.Add<NotificationFilter>());
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -34,7 +28,13 @@ namespace Sample.Identity.API.Ioc
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisCacheDB"));
             services.AddScoped(s => redis.GetDatabase());
 
+            services.AddScoped<IMongoContext, MongoContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Configure context automatically
+            MongoContext context = new MongoContext(configuration);
+            context.Configure();
+
             services.AddScoped<ICacheManager, RedisDBContext>();
             services.AddScoped<ISmsService, ZenviaService>();
             services.AddTransient<IIdentityProvider, IdentityProvider>();

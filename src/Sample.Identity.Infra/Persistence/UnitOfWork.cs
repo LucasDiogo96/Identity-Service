@@ -1,16 +1,15 @@
 ﻿using Sample.Identity.Domain.Entities;
-using Sample.Identity.Infra.Contexts;
 using Sample.Identity.Infra.Contracts;
 
 namespace Sample.Identity.Infra.Persistence
 {
     public class UnitOfWork : IDisposable, IUnitOfWork
     {
-        private readonly PersistenceContext context;
+        private readonly IMongoContext context;
 
         public IRepository<User> UserRepository { get; private set; }
 
-        public UnitOfWork(PersistenceContext context)
+        public UnitOfWork(IMongoContext context)
         {
             this.context = context;
 
@@ -19,7 +18,7 @@ namespace Sample.Identity.Infra.Persistence
 
         public void Save()
         {
-            context.SaveChanges();
+            context.SaveChanges().GetAwaiter().GetResult();
         }
 
         private bool disposed = false;

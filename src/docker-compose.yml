@@ -1,0 +1,36 @@
+version: '3.4'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    #environment:
+    #    MONGO_INITDB_ROOT_USERNAME: root
+    #    MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - '27017:27017'
+  mongo-express:
+    image: mongo-express
+    restart: always
+    #environment:
+    #  ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #  ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    ports:
+      - '8081:8081'
+    depends_on:
+      - mongo
+  redis:
+    image: redis
+    #command: redis-server --requirepass SUASENHA --appendonly yes
+    hostname: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - '/home/duducp/Redis:/var/lib/postgresql/data'
+  sample.identity.api:
+    image: '${DOCKER_REGISTRY-}sampleidentityapi'
+    build:
+      context: .
+      dockerfile: Sample.Identity.API/Dockerfile
+    depends_on:
+      - mongo
+      - redis

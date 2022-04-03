@@ -25,18 +25,18 @@ namespace Sample.Identity.Domain.Services
                 return false;
             }
 
-            // user temporarily blocked by failed attemptsUser temporary
-            if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc >= DateTime.UtcNow)
+            // Password validation
+            if (string.IsNullOrWhiteSpace(password) || !user.Password.Verify(password))
             {
-                notification.AddNotification(MappedErrorsEnum.UserBlockedForManyFailedAttempts);
+                notification.AddNotification(MappedErrorsEnum.UsernameOrPasswordIncorrect);
 
                 return false;
             }
 
-            // Password validation
-            if (string.IsNullOrWhiteSpace(password) || !Password.Verify(password, user.Password.Hash))
+            // user temporarily blocked by failed attemptsUser temporary
+            if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc >= DateTime.UtcNow)
             {
-                notification.AddNotification(MappedErrorsEnum.UsernameOrPasswordIncorrect);
+                notification.AddNotification(MappedErrorsEnum.UserBlockedForManyFailedAttempts);
 
                 return false;
             }
@@ -51,7 +51,7 @@ namespace Sample.Identity.Domain.Services
             return !notification.HasNotifications();
         }
 
-        public void UpdateUserSignInOnFail(User user, int defaultAccountLockoutTimeSpan, int maxFailedAccessAttemptsBeforeLockout)
+        public void UpdateUserSignInOnFail(User user, int accountLockoutTimeSpan, int maxFailedAttempts)
         {
             // Find UsernameOrPasswordIncorrect notification
             Notification? haspassworderror = notification.GetNotifications()
@@ -64,9 +64,9 @@ namespace Sample.Identity.Domain.Services
             user.OnFailedSignInAttempt();
 
             // If the access failed account is greater than max attempts the user should be blocked
-            if (user.AccessFailedCount >= maxFailedAccessAttemptsBeforeLockout)
+            if (user.AccessFailedCount >= maxFailedAttempts)
             {
-                user.LockoutEndDateUtc = DateTime.UtcNow.AddMinutes(defaultAccountLockoutTimeSpan);
+                user.LockoutEndDateUtc = DateTime.UtcNow.AddMinutes(accountLockoutTimeSpan);
 
                 notification.AddNotification(MappedErrorsEnum.UserBlockedForManyFailedAttempts);
             }

@@ -5,10 +5,28 @@ namespace Sample.Identity.Domain.Entities
 {
     public class User : Entity
     {
+        public User()
+        {
+        }
+
+        public User(string firstName, string lastName, string userName, string email, string phoneNumber, string cultureCode, string password)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            UserName = userName;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            CultureCode = cultureCode;
+            Password = new Password(password);
+            Active = true;
+            Tenant = "sample";
+        }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Username { get; set; }
+        public string UserName { get; set; }
         public string Email { get; set; }
+        public string EmailConfirmed { get; set; }
         public string PhoneNumber { get; set; }
         public string CultureCode { get; set; }
         public bool Trustable { get; set; }

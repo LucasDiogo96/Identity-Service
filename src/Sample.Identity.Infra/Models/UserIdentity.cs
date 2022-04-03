@@ -4,10 +4,13 @@ namespace Sample.Identity.Infra.Models
 {
     public class UserIdentity
     {
+        public UserIdentity()
+        { }
+
         public UserIdentity(User user, int tokenExpirationTime)
         {
             UserId = user.Id;
-            Username = user.Username;
+            Username = user.UserName;
             CreateDate = DateTime.UtcNow;
             RefreshToken = Guid.NewGuid().ToString();
             ExpiryDate = CreateDate.AddMinutes(tokenExpirationTime);

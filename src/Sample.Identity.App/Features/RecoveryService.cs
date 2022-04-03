@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.Domain.Contracts;
-using Sample.Identity.Domain.Entities;
-using Sample.Identity.Domain.ValueObjects;
 using Sample.Identity.Infra.Contracts;
 
 namespace Sample.Identity.App.Features

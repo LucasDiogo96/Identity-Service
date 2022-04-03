@@ -42,27 +42,24 @@ namespace Sample.Identity.App.Features
         /// Authenticate user
         /// </summary>
         /// <param name="model"></param>
-        /// <returns></returns>
-        public UserIdentity? SignIn(IdentitySignInTransfer model)
+        /// <returns>jwt token</returns>
+        public UserIdentity SignIn(IdentitySignInTransfer model)
         {
-            // Find user
-            User? user = unitOfWork.UserRepository.Get(e =>
-            e.Username == model.Username && model.Tenant == model.Tenant)?.First();
+            // Find user by username
+            User? user = unitOfWork.UserRepository.Get(e => e.UserName == model.UserName).FirstOrDefault();
 
-            // Validate user signIn inside domain layer
+            // Validate user signIn business rules in domain layer
             if (!userDomainService.ValidateUserSignIn(user, model.Password))
             {
-                OnSignInFail(model, user);
+                OnSignInFail(user);
 
                 return default;
             }
 
-            // Authenticate token
+            // Create JWT token for the current user
             UserIdentity identity = provider.SignIn(user);
 
             OnSignInSucceed(user, identity);
-
-            cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
 
             return identity;
         }
@@ -72,7 +69,7 @@ namespace Sample.Identity.App.Features
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public UserIdentity? Refresh(IdentityRefreshTransfer model)
+        public UserIdentity Refresh(IdentityRefreshTransfer model)
         {
             // Get identity stored on cache
             UserIdentity identity = cacheManager.Get<UserIdentity>(model.RefreshToken);
@@ -88,7 +85,6 @@ namespace Sample.Identity.App.Features
 
             OnRefreshSucceed(model, identity);
 
-            // Handle Authethentication
             return identity;
         }
 
@@ -97,37 +93,40 @@ namespace Sample.Identity.App.Features
         /// </summary>
         /// <param name="auth"></param>
         /// <param name="user"></param>
-        private void OnSignInFail(IdentitySignInTransfer auth, User user)
+        private void OnSignInFail(User user)
         {
-            userDomainService.UpdateUserSignInOnFail(user, settings.AccountLockoutTimeSpan, settings.MaxFailedAttempts);
+            if (user == null || !settings.UserLockoutEnabledByDefault)
+                return;
 
-            logger.LogInformation($"Failed attempts: {user.AccessFailedCount}/{settings.MaxFailedAttempts}. | User: {auth.Username}");
+            // Update failed login count
+            userDomainService.UpdateUserSignInOnFail(user,
+                settings.AccountLockoutTimeSpan, settings.MaxFailedAttempts);
 
+            // Updated stored data
             unitOfWork.UserRepository.Update(user);
 
-            logger.LogInformation($"The authentication was not allowed. | User: {auth.Username}", notification.GetNotifications());
+            unitOfWork.Save();
         }
 
         /// <summary>
         /// Behavior to be performed when an authentication request is valid
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="identity"></param>
         private void OnSignInSucceed(User user, UserIdentity identity)
         {
-            if (user.AccessFailedCount is 0)
+            // Updates user faults only if it is greater than 0 as
+            // there is no need to access the database always
+            if (user.AccessFailedCount is not 0)
             {
-                return;
+                user.ResetSignInAttempts();
+
+                unitOfWork.UserRepository.Update(user);
+
+                unitOfWork.Save();
             }
 
-            user.ResetSignInAttempts();
-
-            unitOfWork.UserRepository.Update(user);
-
-            logger.LogInformation($"Authenticating.. | User: {user.Username}.");
-
-            // Save changes
-            unitOfWork.Save();
+            // Persist identity in cache for refresh token
+            cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace Sample.Identity.App.Features
             // Delete the previous authentication.
             cacheManager.Remove(model.RefreshToken);
 
-            User user = unitOfWork.UserRepository.GetById(model.UserId);
+            User user = unitOfWork.UserRepository.GetById(model.UserId).GetAwaiter().GetResult();
 
             // Authenticate token
             identity = provider.SignIn(user);

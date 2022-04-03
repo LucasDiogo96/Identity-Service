@@ -1,19 +1,23 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Sample.Identity.Infra.Contexts;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Sample.Identity.Infra.Contracts;
+using ServiceStack;
 
 namespace Sample.Identity.Infra.Persistence
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        internal PersistenceContext context;
-        internal DbSet<TEntity> dbSet;
+        protected readonly IMongoContext context;
+        protected IMongoCollection<TEntity> dbSet;
 
-        public BaseRepository(PersistenceContext context)
+        public BaseRepository(IMongoContext context)
         {
             this.context = context;
-            this.dbSet = context.Set<TEntity>();
+
+            dbSet = this.context.GetCollection<TEntity>(typeof(TEntity).Name);
         }
 
         public virtual IEnumerable<TEntity> Get(
@@ -21,7 +25,7 @@ namespace Sample.Identity.Infra.Persistence
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "")
         {
-            IQueryable<TEntity> query = dbSet;
+            IMongoQueryable<TEntity>? query = dbSet.AsQueryable();
 
             if (filter != null)
             {
@@ -31,7 +35,9 @@ namespace Sample.Identity.Infra.Persistence
             foreach (string? includeProperty in includeProperties.Split
                 (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                query = query.Include(includeProperty);
+                IQueryable<TEntity>? linqQuery = query.Include(includeProperty);
+
+                query = ((IMongoQueryable<TEntity>)linqQuery);
             }
 
             if (orderBy != null)
@@ -44,37 +50,36 @@ namespace Sample.Identity.Infra.Persistence
             }
         }
 
-        public virtual TEntity GetById(object id)
+        public virtual async Task<TEntity> GetById(object id)
         {
-            return dbSet.Find(id);
+            IAsyncCursor<TEntity>? data = await dbSet.FindAsync(Builders<TEntity>.Filter.Eq("_id", ObjectId.Parse((string)id)));
+            return data.SingleOrDefault();
         }
 
-        public virtual void Insert(TEntity entity)
+        public virtual async Task<IEnumerable<TEntity>> GetAll()
         {
-            dbSet.Add(entity);
+            IAsyncCursor<TEntity>? all = await dbSet.FindAsync(Builders<TEntity>.Filter.Empty);
+            return all.ToList();
         }
 
-        public virtual void Delete(object id)
+        public virtual void Insert(TEntity obj)
         {
-            TEntity entity = dbSet.Find(id);
-
-            Delete(entity);
+            context.AddCommand(() => dbSet.InsertOneAsync(obj));
         }
 
-        public virtual void Delete(TEntity entity)
+        public virtual void Update(TEntity obj)
         {
-            if (context.Entry(entity).State == EntityState.Detached)
-            {
-                dbSet.Attach(entity);
-            }
-
-            dbSet.Remove(entity);
+            context.AddCommand(() => dbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.GetId()), obj));
         }
 
-        public virtual void Update(TEntity entity)
+        public virtual void Delete(string id)
         {
-            dbSet.Attach(entity);
-            context.Entry(entity).State = EntityState.Modified;
+            context.AddCommand(() => dbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", id)));
+        }
+
+        public void Dispose()
+        {
+            context?.Dispose();
         }
     }
 }

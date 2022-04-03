@@ -5,10 +5,10 @@ namespace Sample.Identity.App.Contracts
 {
     public interface IUserService
     {
-        public User Get(string id);
+        public Task<User> Get(string id);
 
         public void Add(CreateUserCommand model);
 
-        public void Update(UpdateUserCommand model);
+        public Task Update(UpdateUserCommand model);
     }
 }
