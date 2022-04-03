@@ -1,7 +1,7 @@
-﻿using Sample.Identity.Domain.Common;
-using Sample.Identity.Domain.Contracts;
+﻿using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.Enumerators;
+using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.Domain.Services
 {
@@ -61,6 +61,26 @@ namespace Sample.Identity.Domain.Services
 
                 notification.AddNotification(MappedErrorsEnum.UserBlockedForManyFailedAttempts);
             }
+        }
+
+        public bool UpdateUserRecoveredPassword(User user, string recoveryId, string password)
+        {
+            RecoveryCode recovery = user.PasswordRecoveries.FirstOrDefault(e => e.Identifier == recoveryId);
+
+            if (recovery is null && !recovery.Identifier.Equals(recovery))
+            {
+                return false;
+            }
+
+            user.PasswordRecoveries.Remove(recovery);
+
+            recovery.Inactivate();
+
+            user.PasswordRecoveries.Add(recovery);
+
+            user.Password = new Password(password);
+
+            return true;
         }
     }
 }

@@ -1,6 +1,14 @@
-﻿namespace Sample.Identity.App.Contracts
+﻿using Sample.Identity.App.Transfers.Recovery;
+using Sample.Identity.Domain.ValueObjects;
+
+namespace Sample.Identity.App.Contracts
 {
-    internal interface IRecoveryService
+    public interface IRecoveryService
     {
+        public void SendRecoveryCode(PasswordRecoveryRequestTransfer model);
+
+        public RecoveryCode ConfirmRecoveryCode(PasswordRecoveryConfirmTransfer model);
+
+        public bool ChangePassword(PasswordRecoveryTransfer model);
     }
 }

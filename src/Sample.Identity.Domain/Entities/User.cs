@@ -7,6 +7,7 @@ namespace Sample.Identity.Domain.Entities
     {
         public User()
         {
+            PasswordRecoveries = new List<RecoveryCode>();
         }
 
         public User(string firstName, string lastName, string userName, string email, string phoneNumber, string cultureCode, string password)
@@ -20,6 +21,7 @@ namespace Sample.Identity.Domain.Entities
             Password = new Password(password);
             Active = true;
             Tenant = "sample";
+            PasswordRecoveries = new List<RecoveryCode>();
         }
 
         public string FirstName { get; set; }
@@ -37,6 +39,7 @@ namespace Sample.Identity.Domain.Entities
         public int AccessFailedCount { get; set; }
         public Password Password { get; set; }
         public DateTime? LockoutEndDateUtc { get; set; }
+        public List<RecoveryCode> PasswordRecoveries { get; set; }
 
         public void Update(string firstname, string lastname, string phoneNumber, string culture)
         {
@@ -70,6 +73,14 @@ namespace Sample.Identity.Domain.Entities
         public void OnFailedSignInAttempt()
         {
             AccessFailedCount++;
+        }
+
+        public void ForgotPassword(RecoveryCode code)
+        {
+            // Verify recovery
+            code.Verify();
+
+            PasswordRecoveries.Add(code);
         }
     }
 }

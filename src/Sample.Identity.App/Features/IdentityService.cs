@@ -46,7 +46,7 @@ namespace Sample.Identity.App.Features
         public UserIdentity SignIn(IdentitySignInTransfer model)
         {
             // Find user by username
-            User? user = unitOfWork.UserRepository.Get(e => e.UserName == model.UserName).FirstOrDefault();
+            User user = unitOfWork.UserRepository.Get(e => e.UserName == model.UserName).FirstOrDefault();
 
             // Validate user signIn business rules in domain layer
             if (!userDomainService.ValidateUserSignIn(user, model.Password))

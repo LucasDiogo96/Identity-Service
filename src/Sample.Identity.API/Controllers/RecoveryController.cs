@@ -1,40 +1,51 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sample.Identity.App.Contracts;
+using Sample.Identity.App.Transfers.Recovery;
+using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.API.Controllers
 {
     [AllowAnonymous]
     public class RecoveryController : MainController
     {
+        private readonly IRecoveryService service;
         private readonly ILogger<RecoveryController> logger;
 
-        public RecoveryController(ILogger<RecoveryController> logger)
+        public RecoveryController(IRecoveryService service, ILogger<RecoveryController> logger)
         {
             this.logger = logger;
+            this.service = service;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get([FromQuery] string login)
+        public IActionResult Get([FromBody] PasswordRecoveryRequestTransfer model)
         {
+            service.SendRecoveryCode(model);
+
             return Ok();
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] object model)
+        [ProducesResponseType(typeof(RecoveryCode), StatusCodes.Status200OK)]
+        public IActionResult Confirm([FromBody] PasswordRecoveryConfirmTransfer model)
         {
-            return Ok();
+            RecoveryCode response = service.ConfirmRecoveryCode(model);
+
+            return Ok(response);
         }
 
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Patch([FromBody] object model)
+        public IActionResult Put([FromBody] PasswordRecoveryTransfer model)
         {
-            return Ok();
+            bool response = service.ChangePassword(model);
+
+            return Ok(response);
         }
     }
 }
