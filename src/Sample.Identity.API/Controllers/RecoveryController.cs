@@ -18,17 +18,17 @@ namespace Sample.Identity.API.Controllers
             this.service = service;
         }
 
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get([FromBody] PasswordRecoveryRequestTransfer model)
+        public IActionResult Post([FromBody] PasswordRecoveryRequestTransfer model)
         {
             service.SendRecoveryCode(model);
 
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("Confirm")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(RecoveryCode), StatusCodes.Status200OK)]
         public IActionResult Confirm([FromBody] PasswordRecoveryConfirmTransfer model)

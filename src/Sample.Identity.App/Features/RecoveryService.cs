@@ -77,11 +77,11 @@ namespace Sample.Identity.App.Features
 
         private RecoveryCode ConfirmRecoveryCode(User user, string code)
         {
-            RecoveryCode recovery = cacheManager.Get<RecoveryCode>($"password-recovery-{user.Id}");
+            RecoveryCode recovery = cacheManager.Get<RecoveryCode>($"password-recovery-{user.UserName}");
 
-            if (recovery.Equals(code))
+            if (recovery is null || !recovery.Equals(code))
             {
-                logger.LogInformation($"Divergent code.| Expected: {recovery.Code} | Current: {code} | User: {user.UserName}.");
+                logger.LogInformation($"Divergent code.| Expected: {recovery?.Code} | Current: {code} | User: {user.UserName}.");
 
                 return null;
             }
@@ -93,6 +93,9 @@ namespace Sample.Identity.App.Features
 
             // Commit
             unitOfWork.Save();
+
+            //Remove from cache to not use it anymore
+            cacheManager.Remove($"password-recovery-{user.UserName}");
 
             // Return the verification
             return recovery;

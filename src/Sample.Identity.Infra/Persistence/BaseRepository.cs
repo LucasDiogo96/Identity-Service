@@ -69,7 +69,7 @@ namespace Sample.Identity.Infra.Persistence
 
         public virtual void Update(TEntity obj)
         {
-            context.AddCommand(() => dbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.GetId()), obj));
+            context.AddCommand(() => dbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", ObjectId.Parse((string)obj.GetId())), obj));
         }
 
         public virtual void Delete(string id)

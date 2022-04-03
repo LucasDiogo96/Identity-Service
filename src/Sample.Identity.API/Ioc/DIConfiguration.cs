@@ -38,6 +38,7 @@ namespace Sample.Identity.API.Ioc
 
             // Add services dependencies
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IRecoveryService, RecoveryService>();
             services.AddTransient<IUserService, UserService>();
             services.AddScoped<IUserDomainService, UserDomainService>();
 

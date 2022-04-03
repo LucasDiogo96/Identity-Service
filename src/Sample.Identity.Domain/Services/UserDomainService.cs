@@ -67,7 +67,7 @@ namespace Sample.Identity.Domain.Services
         {
             RecoveryCode recovery = user.PasswordRecoveries.FirstOrDefault(e => e.Identifier == recoveryId);
 
-            if (recovery is null && !recovery.Identifier.Equals(recovery))
+            if (recovery is null || !recovery.Identifier.Equals(recoveryId) || !recovery.Active)
             {
                 return false;
             }

@@ -6,6 +6,5 @@ namespace Sample.Identity.App.Transfers.Recovery
     {
         public string UserName { get; set; }
         public string ConfirmationCode { get; set; }
-        public NotificationType NotificationType { get; set; }
     }
 }
