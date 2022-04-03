@@ -14,5 +14,7 @@ namespace Sample.Identity.Domain.Contracts
         public bool HasNotifications();
 
         public IList<Notification> GetNotifications();
+
+        public bool Exists(MappedErrorsEnum error);
     }
 }

@@ -26,6 +26,12 @@ services:
       - '6379:6379'
     volumes:
       - '/home/duducp/Redis:/var/lib/postgresql/data'
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
   sample.identity.api:
     image: '${DOCKER_REGISTRY-}sampleidentityapi'
     build:
@@ -34,6 +40,8 @@ services:
     links:
       - mongo
       - redis
+      - rabbitmq
     depends_on:
       - mongo
       - redis
+      - rabbitmq

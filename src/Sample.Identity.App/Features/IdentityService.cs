@@ -95,8 +95,11 @@ namespace Sample.Identity.App.Features
         /// <param name="user"></param>
         private void OnSignInFail(User user)
         {
-            if (user == null || !settings.UserLockoutEnabledByDefault)
+            if (user == null || !settings.UserLockoutEnabledByDefault ||
+               !notification.Exists(MappedErrorsEnum.UsernameOrPasswordIncorrect))
+            {
                 return;
+            }
 
             // Update failed login count
             userDomainService.UpdateUserSignInOnFail(user,

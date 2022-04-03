@@ -51,13 +51,6 @@ namespace Sample.Identity.Domain.Services
 
         public void UpdateUserSignInOnFail(User user, int accountLockoutTimeSpan, int maxFailedAttempts)
         {
-            // Find UsernameOrPasswordIncorrect notification
-            Notification? haspassworderror = notification.GetNotifications()
-           .FirstOrDefault(e => e.Code == ((int)MappedErrorsEnum.UsernameOrPasswordIncorrect).ToString());
-
-            if (haspassworderror is null || user is null)
-                return;
-
             // Increment the user access failed account
             user.OnFailedSignInAttempt();
 

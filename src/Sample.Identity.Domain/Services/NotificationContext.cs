@@ -2,6 +2,7 @@
 using Sample.Identity.Domain.Common;
 using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Enumerators;
+using Sample.Identity.Domain.Extensions;
 
 namespace Sample.Identity.Domain.Services
 {
@@ -40,6 +41,13 @@ namespace Sample.Identity.Domain.Services
         public IList<Notification> GetNotifications()
         {
             return notifications;
+        }
+
+        public bool Exists(MappedErrorsEnum error)
+        {
+            string code = error.ValueAsInt().ToString();
+
+            return notifications.Exists(e => e.Code.Equals(code));
         }
     }
 }
