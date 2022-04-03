@@ -8,6 +8,12 @@ namespace Sample.Identity.API.Configuration
         {
             services.AddMassTransit(x =>
             {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(new Uri(configuration.GetConnectionString("RabbitMQ")), "/");
+
+                    cfg.ConfigureEndpoints(context);
+                });
             });
         }
     }
