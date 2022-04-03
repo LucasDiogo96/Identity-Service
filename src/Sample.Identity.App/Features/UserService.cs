@@ -1,17 +1,21 @@
 ﻿using Sample.Identity.App.Contracts;
 using Sample.Identity.Domain.Commands;
+using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
+using Sample.Identity.Domain.Enumerators;
 using Sample.Identity.Infra.Contracts;
 
 namespace Sample.Identity.App.Features
 {
     public class UserService : IUserService
     {
+        private readonly INotification notification;
         private readonly IUnitOfWork unitOfWork;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, INotification notification)
         {
             this.unitOfWork = unitOfWork;
+            this.notification = notification;
         }
 
         public async Task<User> Get(string id)
@@ -21,14 +25,17 @@ namespace Sample.Identity.App.Features
 
         public void Add(CreateUserCommand model)
         {
-            User user = new User(
-                model.FirstName,
-                model.LastName,
-                model.Username,
-                model.Email,
-                model.PhoneNumber,
-                model.CultureCode,
-                model.Password);
+            bool exists = unitOfWork.UserRepository.Get(e => e.UserName == model.Username).Any();
+
+            // Check if user exists
+            if (exists)
+            {
+                notification.AddNotification(MappedErrorsEnum.UserNameAlreadyInUse);
+
+                return;
+            }
+
+            User user = new User(model.FirstName, model.LastName, model.Username, model.Email, model.PhoneNumber, model.CultureCode, model.Password);
 
             unitOfWork.UserRepository.Insert(user);
 

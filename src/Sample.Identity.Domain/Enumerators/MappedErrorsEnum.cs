@@ -32,6 +32,9 @@ namespace Sample.Identity.Domain.Enumerators
         GpdrAlreadyAccepted = 1008,
 
         [Description("Too many failed login attempts. Please try again in a few minutes.")]
-        UserBlockedForManyFailedAttempts = 1009
+        UserBlockedForManyFailedAttempts = 1009,
+
+        [Description("The username is already in use.")]
+        UserNameAlreadyInUse = 1010
     }
 }
