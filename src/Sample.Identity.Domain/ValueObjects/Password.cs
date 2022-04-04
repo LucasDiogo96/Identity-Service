@@ -37,6 +37,18 @@ namespace Sample.Identity.Domain.ValueObjects
             Hash = BCrypt.Net.BCrypt.HashPassword(password, Salt);
         }
 
+        public static bool ValidatePasswordPattern(string password)
+        {
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                Regex regex = new Regex(GetPattern());
+
+                return regex.IsMatch(password);
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// The string must contain at least 1 lowercase alphabetical character
         /// The string must contain at least 1 uppercase alphabetical character
@@ -44,18 +56,10 @@ namespace Sample.Identity.Domain.ValueObjects
         /// The string must contain at least one special character
         /// The string must be eight characters or longer
         /// </summary>
-        /// <param name="password"></param>
-        /// <returns>bool</returns>
-        public static bool ValidatePasswordPattern(string password)
+        /// <returns>regex pattern</returns>
+        public static string GetPattern()
         {
-            if (!string.IsNullOrWhiteSpace(password))
-            {
-                Regex regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-
-                return regex.IsMatch(password);
-            }
-
-            return false;
+            return @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
         }
     }
 }

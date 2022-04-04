@@ -12,7 +12,7 @@ namespace Sample.Identity.App.Validators
                .MinimumLength(4);
 
             RuleFor(property => property.Password).NotEmpty()
-                .Must(e => Password.ValidatePasswordPattern(e));
+                .Matches(e => Password.GetPattern());
 
             RuleFor(property => property.PasswordConfirm).NotEmpty()
                 .Equal(e => e.Password);

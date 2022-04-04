@@ -3,9 +3,10 @@
     public class RecoveryCode
     {
         public RecoveryCode()
-        {
-            int minutes = 15;
+        { }
 
+        public RecoveryCode(int minutes)
+        {
             Identifier = Guid.NewGuid().ToString();
             CreatedOn = DateTime.UtcNow;
             Code = new Random().Next(0, 1000000).ToString("D6");

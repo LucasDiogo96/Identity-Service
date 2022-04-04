@@ -9,7 +9,7 @@ namespace Sample.Identity.App.Validators
         public IdentitySignInValidator()
         {
             RuleFor(property => property.UserName).NotEmpty().MinimumLength(4);
-            RuleFor(property => property.Password).NotEmpty().Must(e => Password.ValidatePasswordPattern(e));
+            RuleFor(property => property.Password).NotEmpty().Matches(e => Password.GetPattern());
         }
     }
 }

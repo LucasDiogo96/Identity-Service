@@ -20,7 +20,7 @@ namespace Sample.Identity.App.Validators
             RuleFor(property => property.PhoneNumber).NotEmpty();
 
             RuleFor(property => property.CultureCode).NotEmpty()
-                    .Matches(@"/^[a-z]{2,3}(?:-[A-Z]{2,3}(?:-[a-zA-Z]{4})?)?$/");
+                    .Matches(@"^[a-z]{2}-[A-Z]{2}$");
         }
     }
 }

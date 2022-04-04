@@ -37,10 +37,13 @@ namespace Sample.Identity.API.Ioc
             services.AddScoped<INotification, NotificationContext>();
 
             // Add services dependencies
+            services.AddScoped<IUserDomainService, UserDomainService>();
+
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IRecoveryService, RecoveryService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddScoped<IUserDomainService, UserDomainService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<INotificationService, NotificationService>();
 
             // Add data access dependencies
             services.AddScoped<IMongoContext, MongoContext>();

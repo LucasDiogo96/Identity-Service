@@ -9,5 +9,6 @@
         public bool UserLockoutEnabledByDefault { get; set; }
         public int AccountLockoutTimeSpan { get; set; }
         public int MaxFailedAttempts { get; set; }
+        public int PasswordRecoveryTimespan { get; set; }
     }
 }

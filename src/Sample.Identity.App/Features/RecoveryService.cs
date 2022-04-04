@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Transfers.Recovery;
 using Sample.Identity.Domain.Contracts;
@@ -6,26 +7,27 @@ using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.Enumerators;
 using Sample.Identity.Domain.ValueObjects;
 using Sample.Identity.Infra.Contracts;
+using Sample.Identity.Infra.Models;
 
 namespace Sample.Identity.App.Features
 {
     public class RecoveryService : IRecoveryService
     {
-        private readonly ISmsService smsService;
-        private readonly IEmailService emailService;
+        private readonly INotificationService notification;
         private readonly IUnitOfWork unitOfWork;
         private readonly IUserDomainService domainService;
         private readonly ILogger<RecoveryService> logger;
         private readonly ICacheManager cacheManager;
+        private readonly AppSettings settings;
 
-        public RecoveryService(ISmsService smsService, IEmailService emailService, ICacheManager cacheManager, IUnitOfWork unitOfWork, IUserDomainService domainService, ILogger<RecoveryService> logger)
+        public RecoveryService(INotificationService notification, IOptions<AppSettings> settings, ICacheManager cacheManager, IUnitOfWork unitOfWork, IUserDomainService domainService, ILogger<RecoveryService> logger)
         {
-            this.smsService = smsService;
-            this.emailService = emailService;
             this.unitOfWork = unitOfWork;
             this.domainService = domainService;
             this.logger = logger;
             this.cacheManager = cacheManager;
+            this.settings = settings.Value;
+            this.notification = notification;
         }
 
         public void SendRecoveryCode(PasswordRecoveryRequestTransfer model)
@@ -46,7 +48,7 @@ namespace Sample.Identity.App.Features
         private void SendRecoveryCode(User user, NotificationType type)
         {
             // Create a new record of recovery code to send
-            RecoveryCode recovery = new RecoveryCode();
+            RecoveryCode recovery = new RecoveryCode(settings.PasswordRecoveryTimespan);
 
             // Persist in cache to retrieve as a verification way
             cacheManager.Add($"password-recovery-{user.UserName}", recovery, recovery.ExpireTime);
@@ -139,7 +141,20 @@ namespace Sample.Identity.App.Features
 
         private void Notify(User user, string code, NotificationType type)
         {
-            logger.LogInformation("Notification sent.");
+            switch (type)
+            {
+                case NotificationType.SMS:
+
+                    Task.Factory.StartNew(() => notification.SendRecoverySms(code, user.PhoneNumber));
+
+                    break;
+
+                case NotificationType.EMAIL:
+
+                    Task.Factory.StartNew(() => notification.SendRecoveryEmail(code, user.Email, user.FirstName));
+
+                    break;
+            }
         }
     }
 }
