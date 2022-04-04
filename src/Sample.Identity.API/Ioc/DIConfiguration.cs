@@ -11,7 +11,9 @@ using Sample.Identity.Infra.Models;
 using Sample.Identity.Infra.Persistence;
 using Sample.Identity.Infra.Providers;
 using Sample.Identity.Infra.Services.Sendgrid;
+using Sample.Identity.Infra.Services.Sendgrid.Models;
 using Sample.Identity.Infra.Services.Zenvia;
+using Sample.Identity.Infra.Services.Zenvia.Models;
 using SendGrid.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
@@ -25,12 +27,13 @@ namespace Sample.Identity.API.Ioc
             services.AddMvc(options => options.Filters.Add<NotificationFilter>());
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<SendgridSettings>(configuration.GetSection("SendgridSettings"));
+            services.Configure<ZenviaSettings>(configuration.GetSection("ZenviaSettings"));
 
             // Add notifications dependencies
             services.AddSendGrid(options =>
             {
-                options.ApiKey = configuration.GetSection("SendGridKey").Value;
+                options.ApiKey = configuration.GetSection("SendgridSettings:SecretKey").Value;
             });
             services.AddScoped<ISmsService, ZenviaService>();
             services.AddScoped<IEmailService, SendGridService>();

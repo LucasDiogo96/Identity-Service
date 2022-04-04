@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Sample.Identity.Infra.Contracts;
 using Sample.Identity.Infra.Models;
+using Sample.Identity.Infra.Services.Sendgrid.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -9,11 +10,11 @@ namespace Sample.Identity.Infra.Services.Sendgrid
 {
     public class SendGridService : IEmailService
     {
-        private readonly EmailSettings settings;
+        private readonly SendgridSettings settings;
         private readonly ISendGridClient client;
         private readonly ILogger<SendGridService> logger;
 
-        public SendGridService(ISendGridClient client, IOptions<EmailSettings> settings, ILogger<SendGridService> logger)
+        public SendGridService(ISendGridClient client, IOptions<SendgridSettings> settings, ILogger<SendGridService> logger)
         {
             this.client = client;
             this.logger = logger;
