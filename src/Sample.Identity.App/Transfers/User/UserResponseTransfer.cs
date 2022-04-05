@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sample.Identity.App.Transfers.User
+﻿namespace Sample.Identity.App.Transfers.User
 {
     public class UserResponseTransfer
     {
