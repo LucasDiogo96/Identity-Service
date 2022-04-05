@@ -41,7 +41,7 @@
 
 ## ⚡️ Quickstart
 
-Inside the api folder, exec docker compose
+Inside the src folder, exec docker compose
 
 ```bash
 docker compose-up
