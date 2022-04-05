@@ -1,8 +1,16 @@
 using Sample.Identity.API.Configuration;
 using Sample.Identity.API.Ioc;
 using Sample.Identity.API.Midlewares;
+using Sample.Identity.Infra.Providers;
+using Serilog;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+
+string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+Serilog.ILogger logger = LoggerProvider.AddSerilog(builder.Configuration, env);
+
+builder.Host.UseSerilog(logger);
 
 // Add Application dependencies
 builder.Services.AddApplicationDependencies(builder.Configuration);

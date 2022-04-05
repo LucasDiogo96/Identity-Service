@@ -3,13 +3,17 @@ services:
   mongo:
     image: mongo
     restart: always
+    container_name: 'mongo'
     #environment:
     #    MONGO_INITDB_ROOT_USERNAME: root
     #    MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - '27017:27017'
+    networks:
+      - default
   mongo-express:
     image: mongo-express
+    container_name: 'mongo-express'
     restart: always
     #environment:
     #  ME_CONFIG_MONGODB_ADMINUSERNAME: root
@@ -18,22 +22,53 @@ services:
       - '8081:8081'
     depends_on:
       - mongo
+    networks:
+      - default
   redis:
     image: redis
+    container_name: 'redis'
     #command: redis-server --requirepass SUASENHA --appendonly yes
     hostname: redis
     ports:
       - '6379:6379'
     volumes:
       - '/home/duducp/Redis:/var/lib/postgresql/data'
+    networks:
+      - default
   rabbitmq:
     image: rabbitmq:3-management
     container_name: 'rabbitmq'
     ports:
         - 5672:5672
         - 15672:15672
+    networks:
+      - default
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.1
+    ports:
+      - 9200:9200
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    networks:
+      - default
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.16.1
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL="http://elasticsearch:9200"
+    networks:
+      - default
   sample.identity.api:
     image: '${DOCKER_REGISTRY-}sampleidentityapi'
+    container_name: 'identity-api'
     build:
       context: .
       dockerfile: Sample.Identity.API/Dockerfile
@@ -45,3 +80,11 @@ services:
       - mongo
       - redis
       - rabbitmq
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  elasticsearch-data:

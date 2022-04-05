@@ -16,11 +16,11 @@ namespace Sample.Identity.App.Features
         private readonly INotificationService notification;
         private readonly IUnitOfWork unitOfWork;
         private readonly IUserDomainService domainService;
-        private readonly ILogger<RecoveryService> logger;
+        private readonly Serilog.ILogger logger;
         private readonly ICacheManager cacheManager;
         private readonly AppSettings settings;
 
-        public RecoveryService(INotificationService notification, IOptions<AppSettings> settings, ICacheManager cacheManager, IUnitOfWork unitOfWork, IUserDomainService domainService, ILogger<RecoveryService> logger)
+        public RecoveryService(INotificationService notification, IOptions<AppSettings> settings, ICacheManager cacheManager, IUnitOfWork unitOfWork, IUserDomainService domainService, Serilog.ILogger logger)
         {
             this.unitOfWork = unitOfWork;
             this.domainService = domainService;
@@ -42,7 +42,7 @@ namespace Sample.Identity.App.Features
                 return;
             }
 
-            logger.LogInformation($"User not found on {nameof(SendRecoveryCode)}. | User: {model.UserName}.");
+            logger.Information($"User not found on {nameof(SendRecoveryCode)}. | User: {model.UserName}.");
         }
 
         private void SendRecoveryCode(User user, NotificationType type)
@@ -72,7 +72,7 @@ namespace Sample.Identity.App.Features
                 return ConfirmRecoveryCode(user, model.ConfirmationCode);
             }
 
-            logger.LogInformation($"User not found on {nameof(ConfirmRecoveryCode)}. | User: {model.UserName}.");
+            logger.Information($"User not found on {nameof(ConfirmRecoveryCode)}. | User: {model.UserName}.");
 
             return default;
         }
@@ -83,7 +83,7 @@ namespace Sample.Identity.App.Features
 
             if (recovery is null || !recovery.Equals(code))
             {
-                logger.LogInformation($"Divergent code.| Expected: {recovery?.Code} | Current: {code} | User: {user.UserName}.");
+                logger.Information($"Divergent code.| Expected: {recovery?.Code} | Current: {code} | User: {user.UserName}.");
 
                 return null;
             }
@@ -118,7 +118,7 @@ namespace Sample.Identity.App.Features
                 return ChangePassword(user, model.RecoveryId, model.Password);
             }
 
-            logger.LogInformation($"User not found on {nameof(ChangePassword)}. | User: {model.UserName}.");
+            logger.Information($"User not found on {nameof(ChangePassword)}. | User: {model.UserName}.");
 
             return default;
         }
