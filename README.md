@@ -8,6 +8,7 @@
 - [Mass Transit](https://masstransit-project.com/)
 - [Rabbit MQ](https://www.rabbitmq.com/)
 - [Redis](https://redis.io/)
+- [Fluent Validation](https://fluentvalidation.net/)
 
 ## 🎯 Features
 
@@ -25,7 +26,7 @@
     - [x] User update
 - [ ] Verification
     - [ ] Verify phone number
-    - [ ] Verify email                                                                     |
+    - [ ] Verify email
 
 ## ⚡️ Quickstart
 
