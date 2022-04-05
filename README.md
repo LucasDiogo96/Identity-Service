@@ -35,7 +35,6 @@
 - Welcome email on create account
 - Phone verification
 - Email Verification
-- Kibana integration
 - Event store
 - Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
 - 2FA
@@ -57,6 +56,12 @@ docker compose-up
 - Currently, there is no officially implemented Microsoft Identity for MongoDB, only a third-party library. As authentication is the core of the project, it was decided not to rely on these libraries.
 - Sendgrid was chosen to send emails.
 - For sending sms, the Zenvia platform was chosen
+
+## :bookmark: Logs
+
+The project has integration with the Kibana analytical tool, you can view the logs through the container that is started when performing the compose-up
+
+![Kibana](https://user-images.githubusercontent.com/44218496/161693359-3b8c14ab-3359-47c9-83c6-93a65480c815.png)
 
 ## Patterns
 - [Repository](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application)
