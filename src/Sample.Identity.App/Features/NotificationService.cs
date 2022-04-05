@@ -40,12 +40,7 @@ namespace Sample.Identity.App.Features
 
         public async Task SendRecoveryEmail(string code, string email, string name)
         {
-            // Get email template
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                                                      "Resources/Templates/PasswordRecovery.html");
-
-            // Get email template
-            string template = File.ReadAllText(path);
+            string template = GetTemplate("PasswordRecovery");
 
             // Replace keys
             template = template.Replace("[#Name]", name)
@@ -59,12 +54,7 @@ namespace Sample.Identity.App.Features
 
         public async Task SendIdentityConfirmEmail(string code, string email)
         {
-            // Get email template
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                                                      "Resources/Templates/IdentityConfirm.html");
-
-            // Get email template
-            string template = File.ReadAllText(path);
+            string template = GetTemplate("IdentityConfirm");
 
             // Replace keys
             template = template.Replace("[#RecoveryCode]", code);
@@ -73,6 +63,16 @@ namespace Sample.Identity.App.Features
 
             //Send async
             await emailService.SendAsync(email, message, template);
+        }
+
+        private string GetTemplate(string template)
+        {
+            // Get email template
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                                                             $"Resources/Templates/{template}.html");
+
+            // Get email template
+            return File.ReadAllText(path);
         }
     }
 }
