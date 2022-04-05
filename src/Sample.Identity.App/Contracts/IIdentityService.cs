@@ -1,4 +1,5 @@
 ﻿using Sample.Identity.App.Transfers;
+using Sample.Identity.Domain.Enumerators;
 using Sample.Identity.Infra.Models;
 
 namespace Sample.Identity.App.Contracts
@@ -8,5 +9,7 @@ namespace Sample.Identity.App.Contracts
         public UserIdentity SignIn(IdentitySignInTransfer model);
 
         public UserIdentity Refresh(IdentityRefreshTransfer model);
+
+        public Task VerifyIdentity(string userId, NotificationType type);
     }
 }

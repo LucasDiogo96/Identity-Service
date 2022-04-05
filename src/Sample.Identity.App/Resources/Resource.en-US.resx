@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccountVerificationSubject" xml:space="preserve">
+    <value>Account Verification</value>
+  </data>
   <data name="EmailRecoverySubject" xml:space="preserve">
     <value>Password Recovery</value>
+  </data>
+  <data name="SmsIdentityConfirmMessage" xml:space="preserve">
+    <value>As requested, here is your confirmation code: {0}</value>
   </data>
   <data name="SmsRecoveryMessage" xml:space="preserve">
     <value>As requested, here is your recovery code: {0}</value>

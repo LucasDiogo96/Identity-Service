@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Extensions;
 using Sample.Identity.Infra.Contracts;
@@ -15,6 +14,17 @@ namespace Sample.Identity.App.Features
         {
             this.smsService = smsService;
             this.emailService = emailService;
+        }
+
+        public async Task SendIdentityConfirmSms(string code, string phone)
+        {
+            string template = ResourceExtension.Get("SmsIdentityConfirmMessage");
+
+            // Get the message to send from resources
+            string message = string.Format(template, code);
+
+            // Send sms async
+            await smsService.SendAsync(phone, message);
         }
 
         public async Task SendRecoverySms(string code, string phone)
@@ -47,11 +57,22 @@ namespace Sample.Identity.App.Features
             await emailService.SendAsync(email, message, template);
         }
 
-        private string GetResource(string name)
+        public async Task SendIdentityConfirmEmail(string code, string email)
         {
-            ResourceManager resources = new ResourceManager("Sample.Identity.App.Features.Resources", typeof(NotificationService).Assembly);
+            // Get email template
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                                                      "Resources/Templates/IdentityConfirm.html");
 
-            return resources.GetString(name);
+            // Get email template
+            string template = File.ReadAllText(path);
+
+            // Replace keys
+            template = template.Replace("[#RecoveryCode]", code);
+
+            string message = ResourceExtension.Get("AccountVerificationSubject");
+
+            //Send async
+            await emailService.SendAsync(email, message, template);
         }
     }
 }

@@ -9,6 +9,8 @@ services:
     #    MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - '27017:27017'
+    volumes:
+      - ~/apps/mongo:/data/db
     networks:
       - default
   mongo-express:

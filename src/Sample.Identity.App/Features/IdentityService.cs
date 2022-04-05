@@ -19,6 +19,7 @@ namespace Sample.Identity.App.Features
         private readonly ILogger<IdentityService> logger;
         private readonly IUserDomainService userDomainService;
         private readonly ICacheManager cacheManager;
+        private readonly INotificationService notificationService;
 
         public IdentityService(
             IOptions<AppSettings> settings,
@@ -27,7 +28,8 @@ namespace Sample.Identity.App.Features
             ILogger<IdentityService> logger,
             INotification notification,
             IUserDomainService userDomainService,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager,
+            INotificationService notificationService)
         {
             this.logger = logger;
             this.cacheManager = cacheManager;
@@ -36,6 +38,7 @@ namespace Sample.Identity.App.Features
             this.notification = notification;
             this.unitOfWork = unitOfWork;
             this.userDomainService = userDomainService;
+            this.notificationService = notificationService;
         }
 
         /// <summary>
@@ -86,6 +89,77 @@ namespace Sample.Identity.App.Features
             OnRefreshSucceed(model, identity);
 
             return identity;
+        }
+
+        /// <summary>
+        /// Verify identity email
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="verification"></param>
+        /// <returns>bool</returns>
+        public async Task<bool> VerifyEmail(string userid, string verification)
+        {
+            User user = await unitOfWork.UserRepository.GetById(userid);
+
+            string code = cacheManager.Get<string>($"identity-verification-{user.Id}");
+
+            if (!verification.Equals(code))
+            {
+                return false;
+            }
+
+            user.ConfirmEmail();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Verify identity phone
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="verification"></param>
+        /// <returns></returns>
+        public async Task<bool> VerifyPhone(string userid, string verification)
+        {
+            User user = await unitOfWork.UserRepository.GetById(userid);
+
+            string code = cacheManager.Get<string>($"identity-verification-{user.Id}");
+
+            if (!verification.Equals(code))
+            {
+                return false;
+            }
+
+            user.ConfirmPhone();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Send notification to confirm user identity
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public async Task VerifyIdentity(string userId, NotificationType type)
+        {
+            // Retrieve user data to send a random code to be confirmed, this code
+            // will be store in cache to be temporary
+            User user = await unitOfWork.UserRepository.GetById(userId);
+
+            string code = new Random().Next(0, 1000000).ToString("D6");
+
+            cacheManager.Add($"identity-verification-{user.Id}", code, TimeSpan.FromMinutes(settings.IdentityConfirmTimespan));
+
+            // send notification only if identity isn't confirmed
+            if (type is NotificationType.SMS && !user.PhoneNumberConfirmed)
+            {
+                await Task.Factory.StartNew(() => notificationService.SendIdentityConfirmSms(code, user.PhoneNumber));
+            }
+            else if (type is NotificationType.EMAIL && !user.EmailConfirmed)
+            {
+                await Task.Factory.StartNew(() => notificationService.SendIdentityConfirmEmail(code, user.Email));
+            }
         }
 
         /// <summary>
