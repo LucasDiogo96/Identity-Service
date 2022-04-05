@@ -28,6 +28,17 @@
     - [ ] Verify phone number
     - [ ] Verify email
 
+## :memo: To Do
+
+- Audit
+- Unit Tests
+- Welcome email on create account
+- Phone verification
+- Email Verification
+- Kibana integration
+- Event store
+- Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
+
 ## ⚡️ Quickstart
 
 Inside the api folder, exec docker compose
