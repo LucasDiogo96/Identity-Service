@@ -24,17 +24,15 @@
 - [x] User
     - [x] Get authenticated user
     - [x] User update
-- [ ] Verification
-    - [ ] Verify phone number
-    - [ ] Verify email
+- [X] Verification
+    - [X] Verify phone number
+    - [X] Verify email
 
 ## :memo: To Do
 
 - Audit
 - Unit Tests
 - Welcome email on create account
-- Phone verification
-- Email Verification
 - Event store
 - Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
 - 2FA
