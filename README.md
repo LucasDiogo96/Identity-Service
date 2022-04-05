@@ -38,6 +38,7 @@
 - Kibana integration
 - Event store
 - Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
+- 2FA
 
 ## ⚡️ Quickstart
 
