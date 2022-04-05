@@ -91,56 +91,6 @@ namespace Sample.Identity.App.Features
             return identity;
         }
 
-        /// <summary>
-        /// Verify identity email
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <param name="verification"></param>
-        /// <returns>bool</returns>
-        public async Task<bool> VerifyEmail(string userid, string verification)
-        {
-            User user = await unitOfWork.UserRepository.GetById(userid);
-
-            string code = cacheManager.Get<string>($"identity-verification-{user.Id}");
-
-            if (!verification.Equals(code))
-            {
-                return false;
-            }
-
-            user.ConfirmEmail();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Verify identity phone
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <param name="verification"></param>
-        /// <returns></returns>
-        public async Task<bool> VerifyPhone(string userid, string verification)
-        {
-            User user = await unitOfWork.UserRepository.GetById(userid);
-
-            string code = cacheManager.Get<string>($"identity-verification-{user.Id}");
-
-            if (!verification.Equals(code))
-            {
-                return false;
-            }
-
-            user.ConfirmPhone();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Send notification to confirm user identity
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
         public async Task VerifyIdentity(string userId, NotificationType type)
         {
             // Retrieve user data to send a random code to be confirmed, this code
@@ -149,7 +99,7 @@ namespace Sample.Identity.App.Features
 
             string code = new Random().Next(0, 1000000).ToString("D6");
 
-            cacheManager.Add($"identity-verification-{user.Id}", code, TimeSpan.FromMinutes(settings.IdentityConfirmTimespan));
+            cacheManager.Add($"identity-verification-{user.Id}-{type}".ToLower(), code, TimeSpan.FromMinutes(settings.IdentityConfirmTimespan));
 
             // send notification only if identity isn't confirmed
             if (type is NotificationType.SMS && !user.PhoneNumberConfirmed)
@@ -160,6 +110,60 @@ namespace Sample.Identity.App.Features
             {
                 await Task.Factory.StartNew(() => notificationService.SendIdentityConfirmEmail(code, user.Email));
             }
+        }
+
+        /// <summary>
+        /// Verify identity email
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="verification"></param>
+        /// <returns>bool</returns>
+        public async Task<bool> VerifyEmail(string userid, string verification)
+        {
+            // Create key to store the verification code
+            string key = $"identity-verification-{userid}-{NotificationType.EMAIL}"
+                         .ToLower();
+
+            User user = await unitOfWork.UserRepository.GetById(userid);
+
+            user.ConfirmEmail();
+
+            return VerifyCode(user, key, verification);
+        }
+
+        /// <summary>
+        /// Verify identity phone
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="verification"></param>
+        /// <returns></returns>
+        public async Task<bool> VerifyPhone(string userid, string verification)
+        {
+            string key = $"identity-verification-{userid}-{NotificationType.SMS}"
+                        .ToLower();
+
+            User user = await unitOfWork.UserRepository.GetById(userid);
+
+            user.ConfirmPhone();
+
+            return VerifyCode(user, key, verification);
+        }
+
+        private bool VerifyCode(User user, string key, string verification)
+        {
+            string code = cacheManager.Get<string>(key);
+
+            // If verification fails, the entity will not be updated
+            if (!verification.Equals(code))
+            {
+                return false;
+            }
+
+            unitOfWork.UserRepository.Update(user);
+
+            unitOfWork.Save();
+
+            return true;
         }
 
         /// <summary>

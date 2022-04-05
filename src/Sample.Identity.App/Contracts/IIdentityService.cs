@@ -11,5 +11,9 @@ namespace Sample.Identity.App.Contracts
         public UserIdentity Refresh(IdentityRefreshTransfer model);
 
         public Task VerifyIdentity(string userId, NotificationType type);
+
+        public Task<bool> VerifyEmail(string userid, string verification);
+
+        public Task<bool> VerifyPhone(string userid, string verification);
     }
 }
