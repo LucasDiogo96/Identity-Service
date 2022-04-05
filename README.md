@@ -47,6 +47,9 @@ Inside the src folder, exec docker compose
 docker compose-up
 ```
 
+![Screenshot_3](https://user-images.githubusercontent.com/44218496/161750918-29d3c5d0-d017-47f7-8f06-bb1b0fa0be12.png)
+
+
 ## :computer: Tests
 
 > Work in progress
