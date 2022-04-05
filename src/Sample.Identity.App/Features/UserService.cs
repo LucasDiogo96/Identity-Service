@@ -46,7 +46,7 @@ namespace Sample.Identity.App.Features
         {
             User user = await unitOfWork.UserRepository.GetById(model.Id);
 
-            user.Update(model.FirstName, model.LastName, model.PhoneNumber, model.CultureCode);
+            user.Update(model.FirstName, model.LastName, model.PhoneNumber, model.CultureCode, model.Password);
 
             unitOfWork.UserRepository.Update(user);
 

@@ -10,7 +10,8 @@ namespace Sample.Identity.App.Validators
             RuleFor(property => property.UserName).NotEmpty()
                .MinimumLength(4);
 
-            RuleFor(property => property.NotificationType).NotEmpty().IsInEnum();
+            RuleFor(property => property.NotificationType).NotEmpty()
+                .IsInEnum();
         }
     }
 }

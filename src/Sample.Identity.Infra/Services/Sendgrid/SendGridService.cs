@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sample.Identity.Infra.Contracts;
-using Sample.Identity.Infra.Models;
 using Sample.Identity.Infra.Services.Sendgrid.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;

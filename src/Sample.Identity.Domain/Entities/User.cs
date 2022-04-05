@@ -41,12 +41,15 @@ namespace Sample.Identity.Domain.Entities
         public DateTime? LockoutEndDateUtc { get; set; }
         public List<RecoveryCode> PasswordRecoveries { get; set; }
 
-        public void Update(string firstname, string lastname, string phoneNumber, string culture)
+        public void Update(string firstname, string lastname, string phoneNumber, string culture, string password)
         {
-            FirstName = firstname;
-            LastName = lastname;
-            PhoneNumber = phoneNumber;
-            CultureCode = culture;
+            FirstName = firstname ?? FirstName;
+            LastName = lastname ?? LastName;
+            PhoneNumber = phoneNumber ?? PhoneNumber;
+            CultureCode = culture ?? CultureCode;
+
+            if (password != null)
+                ChangePassword(password);
         }
 
         public void Block()
@@ -81,6 +84,23 @@ namespace Sample.Identity.Domain.Entities
             code.Verify();
 
             PasswordRecoveries.Add(code);
+        }
+
+        public void ChangePassword(string password)
+        {
+            Password = new Password(password);
+        }
+
+        public void ConfirmEmail()
+        {
+            EmailConfirmed = true;
+            Trustable = true;
+        }
+
+        public void ConfirmPhone()
+        {
+            PhoneNumberConfirmed = true;
+            Trustable = true;
         }
     }
 }
