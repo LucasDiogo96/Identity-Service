@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sample.Identity.App.Contracts;
+using Sample.Identity.App.Transfers.User;
 using Sample.Identity.Domain.Commands;
-using Sample.Identity.Domain.Entities;
 
 namespace Sample.Identity.API.Controllers
 {
@@ -19,24 +19,14 @@ namespace Sample.Identity.API.Controllers
             this.logger = logger;
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(string id)
-        {
-            User? response = await service.Get(id);
-
-            return Ok(response);
-        }
-
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UserResponseTransfer), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
             string userId = GetAuthenticatedUserId();
 
-            User? response = await service.Get(userId);
+            UserResponseTransfer? response = await service.Get(userId);
 
             return Ok(response);
         }

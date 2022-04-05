@@ -14,6 +14,8 @@ builder.Services.AddBusConfiguration(builder.Configuration);
 // Add API configurations
 builder.Services.AddCORSConfiguration();
 
+builder.Services.AddAuthorizationSettings(builder.Configuration);
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -42,8 +44,7 @@ app.ConfigureValidatorLocation(app.Configuration);
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthorizationSettings();
 
 app.MapControllers();
 

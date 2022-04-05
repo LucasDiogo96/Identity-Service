@@ -1,4 +1,6 @@
-﻿using Sample.Identity.App.Contracts;
+﻿using Mapster;
+using Sample.Identity.App.Contracts;
+using Sample.Identity.App.Transfers.User;
 using Sample.Identity.Domain.Commands;
 using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
@@ -18,9 +20,12 @@ namespace Sample.Identity.App.Features
             this.notification = notification;
         }
 
-        public async Task<User> Get(string id)
+        public async Task<UserResponseTransfer> Get(string id)
         {
-            return await unitOfWork.UserRepository.GetById(id);
+            User user = await unitOfWork.UserRepository.GetById(id);
+
+            // Map it to not return sensitive data
+            return user.Adapt<UserResponseTransfer>();
         }
 
         public void Add(CreateUserCommand model)

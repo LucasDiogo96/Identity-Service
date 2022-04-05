@@ -45,6 +45,8 @@ namespace Sample.Identity.Infra.Providers
                 }),
                 NotBefore = identity.CreateDate,
                 Expires = identity.ExpiryDate,
+                Issuer = settings.Issuer,
+                IssuedAt = identity.CreateDate,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.SecretKey)), SecurityAlgorithms.HmacSha256Signature)
             };
 
