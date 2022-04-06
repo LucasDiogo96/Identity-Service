@@ -32,7 +32,7 @@
 
 - Audit
 - Unit Tests
-- Welcome email on create account
+- Create templates inside sendgrid dynamic templates
 - Event store
 - Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
 - 2FA
@@ -55,7 +55,9 @@ docker compose-up
 ## :bar_chart: Project Decisions
 
 - Currently, there is no officially implemented Microsoft Identity for MongoDB, only a third-party library. As authentication is the core of the project, it was decided not to rely on these libraries.
-- Sendgrid was chosen to send emails.
+
+- Sendgrid was chosen to send emails because the platform offers 100 free emails a day, in addition to being extremely cheap on paid plans and the possibility of using dynamic templates.
+
 - For sending sms, the Zenvia platform was chosen
 
 ## :bookmark: Logs
