@@ -11,6 +11,7 @@ namespace Sample.Identity.API.Configuration
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<UserAddedConsumer>();
+                x.AddConsumer<UserSignInConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -29,6 +30,11 @@ namespace Sample.Identity.API.Configuration
                     cfg.Message<UserAddedEvent>(x =>
                     {
                         x.SetEntityName(configuration.GetSection("MassTransit:UserAdded:Topic").Value);
+                    });
+
+                    cfg.Message<UserSignInEvent>(x =>
+                    {
+                        x.SetEntityName(configuration.GetSection("MassTransit:UserSignIn:Topic").Value);
                     });
 
                     cfg.ConfigureEndpoints(context);

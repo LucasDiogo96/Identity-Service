@@ -1,4 +1,5 @@
-﻿using Sample.Identity.Domain.ValueObjects;
+﻿using Newtonsoft.Json;
+using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.App.Transfers
 {
@@ -6,7 +7,6 @@ namespace Sample.Identity.App.Transfers
     {
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string IpAddress { get; set; }
         public Coordinates Coordinates { get; set; }
     }
 }

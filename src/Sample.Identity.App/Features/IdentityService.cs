@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Transfers;
 using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.Enumerators;
+using Sample.Identity.Domain.Events;
 using Sample.Identity.Infra.Contracts;
 using Sample.Identity.Infra.Models;
 
@@ -20,6 +22,7 @@ namespace Sample.Identity.App.Features
         private readonly IUserDomainService userDomainService;
         private readonly ICacheManager cacheManager;
         private readonly INotificationService notificationService;
+        private readonly IPublishEndpoint publisher;
 
         public IdentityService(
             IOptions<AppSettings> settings,
@@ -29,9 +32,11 @@ namespace Sample.Identity.App.Features
             INotification notification,
             IUserDomainService userDomainService,
             ICacheManager cacheManager,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IPublishEndpoint publisher)
         {
             this.logger = logger;
+            this.publisher = publisher;
             this.cacheManager = cacheManager;
             this.provider = provider;
             this.settings = settings.Value;
@@ -62,7 +67,7 @@ namespace Sample.Identity.App.Features
             // Create JWT token for the current user
             UserIdentity identity = provider.SignIn(user);
 
-            OnSignInSucceed(user, identity);
+            OnSignInSucceed(user, identity, model);
 
             return identity;
         }
@@ -193,7 +198,7 @@ namespace Sample.Identity.App.Features
         /// Behavior to be performed when an authentication request is valid
         /// </summary>
         /// <param name="user"></param>
-        private void OnSignInSucceed(User user, UserIdentity identity)
+        private void OnSignInSucceed(User user, UserIdentity identity, IdentitySignInTransfer model)
         {
             // Updates user faults only if it is greater than 0 as
             // there is no need to access the database always
@@ -208,6 +213,12 @@ namespace Sample.Identity.App.Features
 
             // Persist identity in cache for refresh token
             cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
+
+            // Build user sign event
+            UserSignInEvent @event = new(identity.UserId, identity.Username, identity.CreateDate, identity.ExpiryDate, model.Coordinates);
+
+            // Publish
+            publisher.Publish(@event).GetAwaiter().GetResult();
         }
 
         /// <summary>
