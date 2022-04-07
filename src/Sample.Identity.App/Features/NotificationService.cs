@@ -57,7 +57,7 @@ namespace Sample.Identity.App.Features
             string template = GetTemplate("IdentityConfirm");
 
             // Replace keys
-            template = template.Replace("[#RecoveryCode]", code);
+            template = template.Replace("[#ConfirmationCode]", code);
 
             string message = ResourceExtension.Get("AccountVerificationSubject");
 
