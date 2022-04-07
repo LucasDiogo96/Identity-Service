@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using GenFu;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Sample.Identity.Domain.Entities;

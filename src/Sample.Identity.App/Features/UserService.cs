@@ -53,7 +53,7 @@ namespace Sample.Identity.App.Features
             // Raise event
             UserAddedEvent @event = user.Adapt<UserAddedEvent>();
 
-            await publisher.Publish<UserAddedEvent>(@event);
+            await publisher.Publish(@event);
         }
 
         public async Task Update(UpdateUserCommand model)

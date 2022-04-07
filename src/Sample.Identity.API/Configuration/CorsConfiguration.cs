@@ -12,7 +12,7 @@
                 {
                     policy
                     .AllowAnyOrigin()
-                    .WithMethods("GET", "POST", "PATCH", "OPTIONS");
+                    .WithMethods("GET", "POST", "PATCH", "PUT", "OPTIONS");
                 });
             });
         }

@@ -1,7 +1,7 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using NUnit.Framework;
 using Sample.Identity.Domain.ValueObjects;
-using System;
 
 namespace Sample.Identity.Tests.ValueObjects
 {

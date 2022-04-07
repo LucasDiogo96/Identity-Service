@@ -17,7 +17,7 @@ namespace Sample.Identity.API.Controllers
                 return User.FindFirst(e => e.Type == ClaimTypes.NameIdentifier).Value;
             }
 
-            throw new System.UnauthorizedAccessException();
+            throw new UnauthorizedAccessException();
         }
     }
 }

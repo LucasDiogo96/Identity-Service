@@ -1,11 +1,11 @@
-﻿using GenFu;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using GenFu;
 using Moq;
 using NUnit.Framework;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.ValueObjects;
-using System;
-using System.Globalization;
-using System.IO;
 
 namespace Sample.Identity.Tests.Entities
 {
