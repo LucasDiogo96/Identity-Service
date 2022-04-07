@@ -41,7 +41,14 @@ docker compose-up
 
 ## :computer: Tests
 
-> Work in progress
+1 - Go to the directory where the test project is.
+```bash
+cd src\Sample.Identity.Tests
+```
+2 - Execute the following command.
+```bash
+dotnet test
+```
 
 ## :bar_chart: Project Decisions
 
