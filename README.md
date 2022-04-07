@@ -31,7 +31,6 @@
 ## :memo: To Do
 
 - Audit
-- Unit Tests
 - Create templates inside sendgrid dynamic templates
 - Event store
 - Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
