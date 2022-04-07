@@ -8,7 +8,7 @@ namespace Sample.Identity.API.Controllers
 {
     [AllowAnonymous]
     [Route("api/Health")]
-    public class HealthController : Controller
+    public class HealthController : MainController
     {
         private readonly HealthCheckService healthCheckService;
 

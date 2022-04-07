@@ -5,8 +5,9 @@ using Sample.Identity.API.Filters;
 namespace Sample.Identity.API.Controllers
 {
     [ApiController]
+    [ApiVersion("1.0")]
     [ModelStateValidation]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Produces("application/json")]
     public class MainController : ControllerBase
     {
