@@ -28,14 +28,6 @@
     - [X] Verify phone number
     - [X] Verify email
 
-## :memo: To Do
-
-- Audit
-- Create templates inside sendgrid dynamic templates
-- Event store
-- Store all app settings keys in cloud with [Azure App configuration]('https://azure.microsoft.com/en-us/services/app-configuration/')
-- 2FA
-
 ## ⚡️ Quickstart
 
 Inside the src folder, exec docker compose
