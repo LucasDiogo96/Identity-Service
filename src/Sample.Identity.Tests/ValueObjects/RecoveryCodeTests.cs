@@ -1,68 +1,130 @@
-﻿//using Moq;
-//using NUnit.Framework;
-//using Sample.Identity.Domain.ValueObjects;
-//using System;
+﻿using Moq;
+using NUnit.Framework;
+using Sample.Identity.Domain.ValueObjects;
+using System;
 
-//namespace Sample.Identity.Tests.ValueObjects
-//{
-//    [TestFixture]
-//    public class RecoveryCodeTests
-//    {
-//        private MockRepository mockRepository;
+namespace Sample.Identity.Tests.ValueObjects
+{
+    [TestFixture]
+    public class RecoveryCodeTests
+    {
+        private MockRepository mockRepository;
 
-//        [SetUp]
-//        public void SetUp()
-//        {
-//            this.mockRepository = new MockRepository(MockBehavior.Strict);
-//        }
+        [SetUp]
+        public void SetUp()
+        {
+            this.mockRepository = new MockRepository(MockBehavior.Strict);
+        }
 
-//        private RecoveryCode CreateRecoveryCode()
-//        {
-//            return new RecoveryCode();
-//        }
+        private RecoveryCode CreateRecoveryCode()
+        {
+            return new RecoveryCode(15);
+        }
 
-//        [Test]
-//        public void Verify_StateUnderTest_ExpectedBehavior()
-//        {
-//            // Arrange
-//            RecoveryCode? recoveryCode = this.CreateRecoveryCode();
+        [Test]
+        public void RecoveryCode_NewRecovery_NotEmptyIdentifier()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
 
-//            // Act
-//            recoveryCode.Verify();
+            Assert.IsNotEmpty(recoveryCode.Identifier);
+        }
 
-//            // Assert
-//            Assert.Fail();
-//            this.mockRepository.VerifyAll();
-//        }
+        [Test]
+        public void RecoveryCode_NewRecovery_NotEmptyCode()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
 
-//        [Test]
-//        public void Inactivate_StateUnderTest_ExpectedBehavior()
-//        {
-//            // Arrange
-//            RecoveryCode? recoveryCode = this.CreateRecoveryCode();
+            Assert.IsNotEmpty(recoveryCode.Code);
+        }
 
-//            // Act
-//            recoveryCode.Inactivate();
+        [Test]
+        public void RecoveryCode_NewRecovery_ExpiresGreaterThanNow()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
 
-//            // Assert
-//            Assert.Fail();
-//            this.mockRepository.VerifyAll();
-//        }
+            Assert.Greater(recoveryCode.ExpiresOn, DateTime.UtcNow);
+        }
 
-//        [Test]
-//        public void Equals_StateUnderTest_ExpectedBehavior()
-//        {
-//            // Arrange
-//            RecoveryCode? recoveryCode = this.CreateRecoveryCode();
-//            string code = null;
+        [Test]
+        public void RecoveryCode_NewRecovery_CodeCanBeConvertedToInt()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
 
-//            // Act
-//            bool result = recoveryCode.Equals(
-//                code);
+            int value = int.Parse(recoveryCode.Code);
 
-//            // Assert
-//            Assert.Fail();
-//            this.mockRepository.VerifyAll();
-//        }
-//    }
-//}
+            Assert.Greater(value, 0);
+        }
+
+        [Test]
+        public void Equals_NonEqualsCode_MustBeFalse()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            string code = "1234";
+
+            Assert.IsFalse(recoveryCode.Equals(code));
+        }
+
+        [Test]
+        public void Equals_EqualsCode_MustBeTrue()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            string code = recoveryCode.Code;
+
+            Assert.IsTrue(recoveryCode.Equals(code));
+        }
+
+        [Test]
+        public void Inactivate_ActiveCode_ActiveMustBeFalse()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            recoveryCode.Inactivate();
+
+            Assert.IsFalse(recoveryCode.Active);
+        }
+
+        [Test]
+        public void Inactivate_InactiveCode_ActiveMustBeFalse()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            recoveryCode.Active = false;
+
+            recoveryCode.Inactivate();
+
+            Assert.IsFalse(recoveryCode.Active);
+        }
+
+        [Test]
+        public void Verify_VerifiedOnNull_MustNotBeNull()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            recoveryCode.Verify();
+
+            Assert.NotNull(recoveryCode.VerifiedOn);
+        }
+
+        [Test]
+        public void Verify_WithExpiredCode_MustThrowInvalidOperationException()
+        {
+            // Arrange
+            RecoveryCode recoveryCode = this.CreateRecoveryCode();
+
+            recoveryCode.ExpiresOn = recoveryCode.ExpiresOn.AddMinutes(-30);
+
+            Assert.Throws<InvalidOperationException>(() => recoveryCode.Verify());
+        }
+    }
+}
