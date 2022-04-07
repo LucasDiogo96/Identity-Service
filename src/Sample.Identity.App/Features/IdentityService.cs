@@ -215,7 +215,13 @@ namespace Sample.Identity.App.Features
             cacheManager.Add(identity.RefreshToken, identity, TimeSpan.FromMinutes(settings.RefreshExpirationTime));
 
             // Build user sign event
-            UserSignInEvent @event = new(identity.UserId, identity.Username, identity.CreateDate, identity.ExpiryDate, model.Coordinates);
+            UserSignInEvent @event = new(
+                identity.UserId,
+                identity.Username,
+                identity.CreateDate,
+                identity.ExpiryDate,
+                model.RemoteAddress,
+                model.Coordinates);
 
             // Publish
             publisher.Publish(@event).GetAwaiter().GetResult();

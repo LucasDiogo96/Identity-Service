@@ -3,17 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Transfers;
 using Sample.Identity.Infra.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Sample.Identity.API.Controllers
 {
     [AllowAnonymous]
     public class IdentityController : MainController
     {
+        private readonly IHttpContextAccessor accessor;
         private readonly IIdentityService service;
 
-        public IdentityController(IIdentityService service)
+        public IdentityController(IIdentityService service, IHttpContextAccessor accessor)
         {
             this.service = service;
+            this.accessor = accessor;
         }
 
         [HttpPost]
@@ -21,6 +24,8 @@ namespace Sample.Identity.API.Controllers
         [ProducesResponseType(typeof(UserIdentity), StatusCodes.Status200OK)]
         public IActionResult Post([FromBody] IdentitySignInTransfer model)
         {
+            model.RemoteAddress = accessor.HttpContext.Connection.RemoteIpAddress?.ToString();
+
             UserIdentity? response = service.SignIn(model);
 
             return Ok(response);

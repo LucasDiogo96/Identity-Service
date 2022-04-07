@@ -1,3 +1,5 @@
+using System.Net;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Sample.Identity.API.Configuration;
@@ -10,15 +12,24 @@ WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-Serilog.ILogger logger = LoggerProvider.AddSerilog(builder.Configuration, env);
+// To be able to get the ip behind a load balancer or proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
-builder.Host.UseSerilog(logger);
+    options.KnownProxies.Add(IPAddress.Parse(builder.Configuration["ProxyServer"]));
+});
+
+// User serilog as log provider
+builder.Host.UseSerilog(LoggerProvider.AddSerilog(builder.Configuration, env));
 
 // Add Application dependencies
 builder.Services.AddApplicationDependencies(builder.Configuration);
 
+// Fluent validation settings
 builder.Services.AddValidatorConfiguration();
 
+// Mass transit settings
 builder.Services.AddBusConfiguration(builder.Configuration);
 
 // Add API configurations
@@ -34,6 +45,7 @@ builder.Services.AddSwaggerConfiguration();
 
 builder.Services.AddHealthChecks();
 
+// Api versioning
 builder.Services.AddApiVersioning(o =>
 {
     o.AssumeDefaultVersionWhenUnspecified = true;
@@ -45,17 +57,13 @@ builder.Services.AddApiVersioning(o =>
         new MediaTypeApiVersionReader("x-api-version"));
 });
 
-builder.Services.AddVersionedApiExplorer(setup =>
-{
-    setup.GroupNameFormat = "'v'VVV";
-    setup.SubstituteApiVersionInUrl = true;
-});
-
 // HTTP client factory
 builder.Services.AddHttpClient();
 
 // Builders
 WebApplication? app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.UseCORSConfiguration();
 
