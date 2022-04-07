@@ -59,6 +59,9 @@ WebApplication? app = builder.Build();
 
 app.UseCORSConfiguration();
 
+// Default settings doesn't log sensitive data
+app.UseHttpLogging();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
