@@ -7,7 +7,7 @@ namespace Sample.Identity.App.Contracts
     {
         public Task<UserResponseTransfer> Get(string id);
 
-        public void Add(CreateUserCommand model);
+        public Task Add(CreateUserCommand model);
 
         public Task Update(UpdateUserCommand model);
     }

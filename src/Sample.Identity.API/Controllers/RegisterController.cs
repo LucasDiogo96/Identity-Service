@@ -21,9 +21,9 @@ namespace Sample.Identity.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] CreateUserCommand model)
+        public async Task<IActionResult> Post([FromBody] CreateUserCommand model)
         {
-            service.Add(model);
+            await service.Add(model);
 
             return Ok();
         }

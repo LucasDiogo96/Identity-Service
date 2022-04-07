@@ -1,23 +1,27 @@
 ﻿using Mapster;
+using MassTransit;
 using Sample.Identity.App.Contracts;
 using Sample.Identity.App.Transfers.User;
 using Sample.Identity.Domain.Commands;
 using Sample.Identity.Domain.Contracts;
 using Sample.Identity.Domain.Entities;
 using Sample.Identity.Domain.Enumerators;
+using Sample.Identity.Domain.Events;
 using Sample.Identity.Infra.Contracts;
 
 namespace Sample.Identity.App.Features
 {
     public class UserService : IUserService
     {
+        private readonly IPublishEndpoint publisher;
         private readonly INotification notification;
         private readonly IUnitOfWork unitOfWork;
 
-        public UserService(IUnitOfWork unitOfWork, INotification notification)
+        public UserService(IUnitOfWork unitOfWork, INotification notification, IPublishEndpoint publisher)
         {
             this.unitOfWork = unitOfWork;
             this.notification = notification;
+            this.publisher = publisher;
         }
 
         public async Task<UserResponseTransfer> Get(string id)
@@ -28,7 +32,7 @@ namespace Sample.Identity.App.Features
             return user.Adapt<UserResponseTransfer>();
         }
 
-        public void Add(CreateUserCommand model)
+        public async Task Add(CreateUserCommand model)
         {
             bool exists = unitOfWork.UserRepository.Get(e => e.UserName == model.Username).Any();
 
@@ -45,6 +49,11 @@ namespace Sample.Identity.App.Features
             unitOfWork.UserRepository.Insert(user);
 
             unitOfWork.Save();
+
+            // Raise event
+            UserAddedEvent @event = user.Adapt<UserAddedEvent>();
+
+            await publisher.Publish<UserAddedEvent>(@event);
         }
 
         public async Task Update(UpdateUserCommand model)
