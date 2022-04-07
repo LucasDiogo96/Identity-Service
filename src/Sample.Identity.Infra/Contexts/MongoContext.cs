@@ -19,9 +19,11 @@ namespace Sample.Identity.Infra.Contexts
         {
             commands = new List<Func<Task>>();
 
-            MongoClient = new MongoClient(configuration.GetConnectionString("IdentityDB"));
+            string databaseName = configuration["DatabaseName"];
 
-            Database = MongoClient.GetDatabase("IdentityDB");
+            MongoClient = new MongoClient(configuration.GetConnectionString(databaseName));
+
+            Database = MongoClient.GetDatabase(databaseName);
         }
 
         public void Configure()
