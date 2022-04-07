@@ -25,6 +25,9 @@
 
         public void Verify()
         {
+            if (DateTime.UtcNow > ExpiresOn)
+                throw new InvalidOperationException("Recovery code is expired.");
+
             VerifiedOn = DateTime.UtcNow;
         }
 

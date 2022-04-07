@@ -1,4 +1,5 @@
-﻿using Sample.Identity.Domain.Common;
+﻿using System.Globalization;
+using Sample.Identity.Domain.Common;
 using Sample.Identity.Domain.ValueObjects;
 
 namespace Sample.Identity.Domain.Entities
@@ -43,12 +44,23 @@ namespace Sample.Identity.Domain.Entities
 
         public void Update(string firstname, string lastname, string phoneNumber, string culture, string password)
         {
-            FirstName = firstname ?? FirstName;
-            LastName = lastname ?? LastName;
-            PhoneNumber = phoneNumber ?? PhoneNumber;
-            CultureCode = culture ?? CultureCode;
+            if (!string.IsNullOrWhiteSpace(firstname))
+                FirstName = firstname;
 
-            if (password != null)
+            if (!string.IsNullOrWhiteSpace(lastname))
+                FirstName = lastname;
+
+            if (!string.IsNullOrWhiteSpace(phoneNumber))
+                PhoneNumber = phoneNumber;
+
+            if (!string.IsNullOrWhiteSpace(culture))
+            {
+                CultureInfo info = new CultureInfo(culture);
+
+                CultureCode = info.IetfLanguageTag;
+            }
+
+            if (!string.IsNullOrWhiteSpace(password))
                 ChangePassword(password);
         }
 
