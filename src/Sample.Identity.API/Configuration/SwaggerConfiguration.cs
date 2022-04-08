@@ -12,8 +12,7 @@ namespace Sample.Identity.API.Configuration
                 {
                     Version = "v1",
                     Title = "Sample.Identity.API",
-                    Description = "Web api to provide authentication services",
-                    TermsOfService = new Uri("https://neogrid.com/br/termo-de-uso"),
+                    Description = "Web api to provide authentication services"
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -21,7 +20,7 @@ namespace Sample.Identity.API.Configuration
                     In = ParameterLocation.Header,
                     Description = "Please insert JWT with Bearer into field",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.Http
+                    Type = SecuritySchemeType.ApiKey
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement {
